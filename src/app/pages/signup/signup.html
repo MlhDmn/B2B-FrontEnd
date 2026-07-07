@@ -1,84 +1,104 @@
-<main class="bg-gray-50 min-h-screen py-10 px-4 md:px-8 dark:bg-neutral-900 flex flex-col items-center justify-center">
-   <div class="w-full max-w-md mx-auto">
-      <!-- Logo -->
-      <a href="/" class="mb-10 block">
-         <img src="https://readymadeui.com/logo-alt.svg" alt="logo" class="w-14 min-h-14 mx-auto block" />
-      </a>
-
-      <!-- Signup Card -->
-      <div class="p-6 rounded-lg bg-white border border-slate-300 shadow-xs md:p-8 dark:bg-neutral-800 dark:border-neutral-700">
-         <h1 class="text-slate-900 text-center text-3xl font-bold dark:text-slate-50">Create an account</h1>
-
-         <form (ngSubmit)="submit(signupForm)" #signupForm="ngForm" novalidate class="space-y-6 mt-10">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-               <div>
-                  <label for="firstName" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">First name</label>
-                  <input type="text" id="firstName" name="firstName" [(ngModel)]="form.firstName" required maxlength="50"
-                     class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
-               </div>
-               <div>
-                  <label for="lastName" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">Last name</label>
-                  <input type="text" id="lastName" name="lastName" [(ngModel)]="form.lastName" required maxlength="50"
-                     class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
-               </div>
-            </div>
-            <div>
-               <label for="email" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">Email</label>
-               <input type="email" id="email" name="email" [(ngModel)]="form.email" (focus)="clearError()" (ngModelChange)="clearError()" placeholder="john@example.com" required maxlength="100"
-                  class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
-            </div>
-            <div>
-               <label for="password" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">Password</label>
-               <input type="password" id="password" name="password" [(ngModel)]="form.password" (focus)="clearError()" (ngModelChange)="clearError()" placeholder="••••••••" required minlength="8" maxlength="100"
-                  class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
-            </div>
-            <div>
-               <label for="confirm-password" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">Confirm password</label>
-               <input type="password" id="confirm-password" name="confirmPassword" [(ngModel)]="form.confirmPassword" (focus)="clearError()" (ngModelChange)="clearError()" placeholder="••••••••" required minlength="8" maxlength="100"
-                  class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
-            </div>
-
-            <div class="flex items-start flex-wrap gap-2">
-               <label class="flex items-center group has-[input:checked]:text-slate-900">
-                  <input id="tmc" name="tmc" type="checkbox" required class="sr-only" />
-                  <!-- Custom box -->
-                  <span class="flex h-4 w-4 shrink-0 items-center justify-center rounded outline-1 outline-slate-300 dark:outline-neutral-600
-                              bg-white dark:bg-neutral-700
-                              group-has-[input:checked]:bg-blue-600
-                              group-has-[input:checked]:outline-blue-600
-                              group-focus-within:outline-2
-                              group-focus-within:outline-blue-600" aria-hidden="true">
-                     <!-- Checkmark -->
-                     <svg class="size-3 text-white opacity-0 group-has-[input:checked]:opacity-100" viewBox="0 0 12 10"
-                        fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M1 5l3 3 7-7" />
-                     </svg>
-                  </span>
-                  <span class="ml-3 text-sm text-slate-700 dark:text-slate-300">
-                     I accept the
-                  </span>
-               </label>
-
-               <a href="#" class="text-sm font-medium text-blue-700 dark:text-blue-500 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">
-                  Terms and Conditions
-               </a>
-            </div>
-
-            @if (errorMessage()) {
-               <p role="alert" class="text-sm text-red-600 dark:text-red-400">{{ errorMessage() }}</p>
-            }
-
-            <button type="submit" [disabled]="isSubmitting()"
-               class="w-full py-2 px-3.5 text-sm rounded-md font-semibold cursor-pointer tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
-               {{ isSubmitting() ? 'Creating account...' : 'Create an account' }}</button>
-               
-            <div class="text-slate-900 text-sm text-center dark:text-slate-50 mt-6">
-               Already have an account? 
-               <a routerLink="/login" class="text-blue-700 hover:underline ml-1 font-medium dark:text-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded">
-                  Login here
-               </a>
-            </div>
-         </form>
+<main class="auth-shell">
+   <section class="auth-panel" aria-labelledby="signup-title">
+      <div class="brand-block">
+         <a routerLink="/login" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+         <div>
+            <p class="eyebrow">Supplier portal</p>
+            <h1 id="signup-title">Create account</h1>
+         </div>
       </div>
-   </div>
+
+      <form (ngSubmit)="submit(signupForm)" #signupForm="ngForm" novalidate class="auth-form">
+         <div class="form-grid">
+            <div class="field-group">
+               <label for="firstName">First name</label>
+               <input type="text" id="firstName" name="firstName" [(ngModel)]="form.firstName" required maxlength="50" />
+            </div>
+
+            <div class="field-group">
+               <label for="lastName">Last name</label>
+               <input type="text" id="lastName" name="lastName" [(ngModel)]="form.lastName" required maxlength="50" />
+            </div>
+         </div>
+
+         <div class="field-group">
+            <label for="email">Email</label>
+            <input
+               type="email"
+               id="email"
+               name="email"
+               [(ngModel)]="form.email"
+               (focus)="clearError()"
+               (ngModelChange)="clearError()"
+               placeholder="john@example.com"
+               required
+               maxlength="100" />
+         </div>
+
+         <div class="field-group">
+            <label for="password">Password</label>
+            <input
+               type="password"
+               id="password"
+               name="password"
+               [(ngModel)]="form.password"
+               (focus)="clearError()"
+               (ngModelChange)="clearError()"
+               placeholder="At least 8 characters"
+               required
+               minlength="8"
+               maxlength="100" />
+         </div>
+
+         <div class="field-group">
+            <label for="confirm-password">Confirm password</label>
+            <input
+               type="password"
+               id="confirm-password"
+               name="confirmPassword"
+               [(ngModel)]="form.confirmPassword"
+               (focus)="clearError()"
+               (ngModelChange)="clearError()"
+               placeholder="Repeat your password"
+               required
+               minlength="8"
+               maxlength="100" />
+         </div>
+
+         <label class="check-row terms-row">
+            <input id="tmc" name="tmc" type="checkbox" required />
+            <span>I accept the <a href="#">Terms and Conditions</a></span>
+         </label>
+
+         @if (errorMessage()) {
+            <p role="alert" class="form-error">{{ errorMessage() }}</p>
+         }
+
+         <button type="submit" [disabled]="isSubmitting()" class="primary-button">
+            {{ isSubmitting() ? 'Creating account...' : 'Create account' }}
+         </button>
+      </form>
+
+      <p class="auth-switch">
+         Already have an account?
+         <a routerLink="/login">Sign in</a>
+      </p>
+   </section>
+
+   <aside class="auth-aside" aria-hidden="true">
+      <div class="metric-stack">
+         <div>
+            <span>Verified vendors</span>
+            <strong>420</strong>
+         </div>
+         <div>
+            <span>Catalog depth</span>
+            <strong>8K</strong>
+         </div>
+         <div>
+            <span>Regions</span>
+            <strong>TR</strong>
+         </div>
+      </div>
+   </aside>
 </main>

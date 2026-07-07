@@ -16,6 +16,7 @@ export class Landing implements OnInit {
   products = signal<Product[]>([]);
   errorMessage = signal('');
   isLoading = signal(true);
+  isSidebarOpen = signal(false);
 
   readonly getProductGenderLabel = getProductGenderLabel;
 
@@ -54,6 +55,14 @@ export class Landing implements OnInit {
 
   logout(): void {
     this.authService.logout();
+  }
+
+  toggleSidebar(): void {
+    this.isSidebarOpen.update(isOpen => !isOpen);
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen.set(false);
   }
 
   formatPrice(price: number): string {
