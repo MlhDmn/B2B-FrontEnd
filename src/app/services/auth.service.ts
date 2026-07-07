@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
+import { ApiResponse, unwrapApiResponse } from './api-response';
 
 export interface RegisterRequest {
   email: string;
@@ -15,13 +16,18 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  expiresAtUtc: string;
+export interface AuthUser {
   userId: number;
   email: string;
   firstName: string;
   lastName: string;
+  fullName: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  expiresAtUtc: string;
+  user: AuthUser;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -35,13 +41,15 @@ export class AuthService {
   ) {}
 
   register(request: RegisterRequest) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/register`, request).pipe(
+      map(response => unwrapApiResponse(response, 'Registration failed. Please try again.')),
       tap(response => this.saveToken(response.token))
     );
   }
 
   login(request: LoginRequest) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request).pipe(
+    return this.http.post<ApiResponse<AuthResponse>>(`${this.apiUrl}/login`, request).pipe(
+      map(response => unwrapApiResponse(response, 'Login failed. Please try again.')),
       tap(response => this.saveToken(response.token))
     );
   }
@@ -67,4 +75,5 @@ export class AuthService {
       localStorage.setItem(this.tokenKey, token);
     }
   }
+
 }

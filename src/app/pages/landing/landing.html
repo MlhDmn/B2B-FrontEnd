@@ -1,1 +1,85 @@
-<p>landing works!</p>
+<main class="min-h-screen bg-gray-50 text-slate-900 dark:bg-neutral-950 dark:text-slate-50">
+  <header class="border-b border-slate-200 bg-white dark:border-neutral-800 dark:bg-neutral-900">
+    <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 md:px-8">
+      <div>
+        <p class="text-sm font-medium text-blue-700 dark:text-blue-400">B2B catalog</p>
+        <h1 class="text-2xl font-bold">Products</h1>
+      </div>
+
+      <button
+        type="button"
+        (click)="logout()"
+        class="rounded-md border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-neutral-700 dark:text-slate-200 dark:hover:bg-neutral-800">
+        Log out
+      </button>
+    </div>
+  </header>
+
+  <section class="mx-auto w-full max-w-7xl px-4 py-8 md:px-8">
+    @if (isLoading()) {
+      <div class="rounded-md border border-slate-200 bg-white p-6 text-sm text-slate-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-slate-300">
+        Loading products...
+      </div>
+    } @else if (errorMessage()) {
+      <div class="rounded-md border border-red-200 bg-red-50 p-6 dark:border-red-900/60 dark:bg-red-950/30">
+        <p role="alert" class="text-sm font-medium text-red-700 dark:text-red-300">{{ errorMessage() }}</p>
+        <button
+          type="button"
+          (click)="loadProducts()"
+          class="mt-4 rounded-md bg-red-700 px-3 py-2 text-sm font-semibold text-white transition hover:bg-red-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500">
+          Try again
+        </button>
+      </div>
+    } @else if (products().length === 0) {
+      <div class="rounded-md border border-slate-200 bg-white p-6 text-sm text-slate-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-slate-300">
+        No products found.
+      </div>
+    } @else {
+      <div class="product-grid">
+        @for (product of products(); track product.id) {
+          <article class="product-card">
+            <div class="product-image">
+              <img [src]="product.imageUrl" [alt]="product.name" />
+            </div>
+
+            <div class="product-content">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <h2>{{ product.name }}</h2>
+                  <p>{{ product.categoryName }}</p>
+                </div>
+                <strong>{{ formatPrice(product.price) }}</strong>
+              </div>
+
+              <p class="description">{{ product.description }}</p>
+              <p class="category-description">{{ product.categoryDescription }}</p>
+
+              <dl>
+                <div>
+                  <dt>Origin</dt>
+                  <dd>{{ product.origin }}</dd>
+                </div>
+                <div>
+                  <dt>Gender</dt>
+                  <dd>{{ getProductGenderLabel(product.gender) }}</dd>
+                </div>
+                <div>
+                  <dt>Material</dt>
+                  <dd>{{ product.material }}</dd>
+                </div>
+                <div>
+                  <dt>Sizes</dt>
+                  <dd>{{ product.sizeRange }}</dd>
+                </div>
+                <div>
+                  <dt>Stock</dt>
+                  <dd>{{ product.stockQuantity }}</dd>
+                </div>
+              </dl>
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</main>

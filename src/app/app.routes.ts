@@ -10,3 +10,4 @@ export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
 ];
+// AUTH GUARD buraya eklenecek
