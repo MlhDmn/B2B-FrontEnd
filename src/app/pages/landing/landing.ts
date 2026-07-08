@@ -14,7 +14,14 @@ import { getProductGenderLabel, Product, ProductService } from '../../services/p
   styleUrl: './landing.css',
 })
 export class Landing implements OnInit {
+  readonly pageSize = 20;
+
   products = signal<Product[]>([]);
+  currentPage = signal(1);
+  totalCount = signal(0);
+  totalPageCount = signal(1);
+  hasPreviousPage = signal(false);
+  hasNextPage = signal(false);
   errorMessage = signal('');
   isLoading = signal(true);
   isSidebarOpen = signal(false);
@@ -32,23 +39,33 @@ export class Landing implements OnInit {
       return;
     }
 
-    this.loadProducts();
+    this.loadProducts(1);
   }
 
-  loadProducts(): void {
+  loadProducts(pageNumber = this.currentPage()): void {
     this.errorMessage.set('');
     this.isLoading.set(true);
 
-    this.productService.getProducts().pipe(
+    this.productService.getProducts(pageNumber, this.pageSize).pipe(
       finalize(() => {
         this.isLoading.set(false);
       })
     ).subscribe({
-      next: products => {
-        this.products.set(products);
+      next: page => {
+        this.products.set(page.items);
+        this.currentPage.set(page.pageNumber);
+        this.totalCount.set(page.totalCount);
+        this.totalPageCount.set(Math.max(page.totalPages, 1));
+        this.hasPreviousPage.set(page.hasPreviousPage);
+        this.hasNextPage.set(page.hasNextPage);
       },
       error: error => {
         this.products.set([]);
+        this.currentPage.set(1);
+        this.totalCount.set(0);
+        this.totalPageCount.set(1);
+        this.hasPreviousPage.set(false);
+        this.hasNextPage.set(false);
         this.errorMessage.set(getApiErrorMessage(error, 'Products could not be loaded.'));
       }
     });
@@ -64,6 +81,44 @@ export class Landing implements OnInit {
 
   closeSidebar(): void {
     this.isSidebarOpen.set(false);
+  }
+
+  totalPages(): number {
+    return this.totalPageCount();
+  }
+
+  pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages() }, (_, index) => index + 1);
+  }
+
+  pageStart(): number {
+    if (this.totalCount() === 0) {
+      return 0;
+    }
+
+    return (this.currentPage() - 1) * this.pageSize + 1;
+  }
+
+  pageEnd(): number {
+    return Math.min(this.currentPage() * this.pageSize, this.totalCount());
+  }
+
+  goToPage(page: number): void {
+    const nextPage = Math.min(Math.max(page, 1), this.totalPages());
+
+    if (nextPage === this.currentPage()) {
+      return;
+    }
+
+    this.loadProducts(nextPage);
+  }
+
+  goToPreviousPage(): void {
+    this.goToPage(this.currentPage() - 1);
+  }
+
+  goToNextPage(): void {
+    this.goToPage(this.currentPage() + 1);
   }
 
   formatPrice(price: number): string {

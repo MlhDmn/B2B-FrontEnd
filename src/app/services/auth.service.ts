@@ -32,7 +32,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly apiUrl = 'https://localhost:7039/api/auth';
+  private readonly apiUrl = 'http://localhost:5072/api/auth';
   private readonly tokenKey = 'access_token';
 
   constructor(

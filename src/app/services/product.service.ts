@@ -41,14 +41,26 @@ export interface ProductCreateRequest {
   categoryId: number;
 }
 
+export interface PagedProductsResponse {
+  items: Product[];
+  pageNumber: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private readonly apiUrl = 'https://localhost:7039/api/Products';
+  private readonly apiUrl = 'http://localhost:5072/api/Products';
 
   constructor(private readonly http: HttpClient) {}
 
-  getProducts() {
-    return this.http.get<ApiResponse<Product[]>>(this.apiUrl).pipe(
+  getProducts(pageNumber = 1, pageSize = 20) {
+    return this.http.get<ApiResponse<PagedProductsResponse>>(
+      `${this.apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    ).pipe(
       map(response => unwrapApiResponse(response, 'Products could not be loaded.'))
     );
   }

@@ -29,7 +29,11 @@
     <div class="summary-strip">
       <div>
         <span>Total products</span>
-        <strong>{{ products().length }}</strong>
+        <strong>{{ totalCount() }}</strong>
+      </div>
+      <div>
+        <span>Page</span>
+        <strong>{{ currentPage() }} / {{ totalPages() }}</strong>
       </div>
       <div>
         <span>Status</span>
@@ -56,6 +60,10 @@
         <p>No products found.</p>
       </div>
     } @else {
+      <div class="pagination-summary">
+        <p>Showing {{ pageStart() }}-{{ pageEnd() }} of {{ totalCount() }} products</p>
+      </div>
+
       <div class="product-grid">
         @for (product of products(); track product.id) {
           <article class="product-card">
@@ -98,6 +106,39 @@
           </article>
         }
       </div>
+
+      @if (totalPages() > 1) {
+        <nav class="pagination-nav" aria-label="Product pages">
+          <button
+            type="button"
+            class="pagination-button"
+            (click)="goToPreviousPage()"
+            [disabled]="currentPage() === 1">
+            Previous
+          </button>
+
+          <div class="page-buttons">
+            @for (page of pageNumbers(); track page) {
+              <button
+                type="button"
+                class="page-button"
+                [class.active]="page === currentPage()"
+                [attr.aria-current]="page === currentPage() ? 'page' : null"
+                (click)="goToPage(page)">
+                {{ page }}
+              </button>
+            }
+          </div>
+
+          <button
+            type="button"
+            class="pagination-button"
+            (click)="goToNextPage()"
+            [disabled]="currentPage() === totalPages()">
+            Next
+          </button>
+        </nav>
+      }
     }
   </section>
 
@@ -113,7 +154,7 @@
     <nav class="sidebar-nav" aria-label="Catalog navigation">
       <a routerLink="/home" class="nav-item active" (click)="closeSidebar()">
         <span>Products</span>
-        <small>{{ products().length }} items</small>
+        <small>{{ totalCount() }} items</small>
       </a>
       <a routerLink="/products/add" class="nav-item" (click)="closeSidebar()">
         <span>Add Product</span>

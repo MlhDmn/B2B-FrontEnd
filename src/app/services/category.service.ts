@@ -11,7 +11,7 @@ export interface Category {
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private readonly apiUrl = 'https://localhost:7039/api/Categories';
+  private readonly apiUrl = 'http://localhost:5072/api/Categories';
 
   constructor(private readonly http: HttpClient) {}
 
