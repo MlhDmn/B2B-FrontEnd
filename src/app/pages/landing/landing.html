@@ -111,13 +111,13 @@
     </div>
 
     <nav class="sidebar-nav" aria-label="Catalog navigation">
-      <a href="" class="nav-item active" (click)="$event.preventDefault()">
+      <a routerLink="/home" class="nav-item active" (click)="closeSidebar()">
         <span>Products</span>
         <small>{{ products().length }} items</small>
       </a>
-      <a href="" class="nav-item" (click)="$event.preventDefault()">
-        <span>Shopping Cart</span>
-        <small>Review orders</small>
+      <a routerLink="/products/add" class="nav-item" (click)="closeSidebar()">
+        <span>Add Product</span>
+        <small>Create catalog item</small>
       </a>
       <a href="" class="nav-item" (click)="$event.preventDefault()">
         <span>Wish List</span>

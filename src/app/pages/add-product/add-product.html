@@ -1,0 +1,199 @@
+<main class="product-form-shell">
+  <header class="product-form-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+        <div>
+          <p class="eyebrow">Catalog workspace</p>
+          <h1>Add product</h1>
+        </div>
+      </div>
+
+      <a routerLink="/home" class="secondary-button">Back to products</a>
+    </div>
+  </header>
+
+  <section class="product-form-body">
+    <form (ngSubmit)="submit(productForm)" #productForm="ngForm" novalidate class="product-form">
+      <div class="form-section">
+        <div class="section-heading">
+          <p class="eyebrow">Basics</p>
+          <h2>Product details</h2>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group wide-field">
+            <label for="name">Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              [(ngModel)]="form.name"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              maxlength="100"
+              required />
+          </div>
+
+          <div class="field-group">
+            <label for="price">Price</label>
+            <input
+              id="price"
+              name="price"
+              type="number"
+              [(ngModel)]="form.price"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              min="0.01"
+              step="0.01"
+              required />
+          </div>
+
+          <div class="field-group">
+            <label for="stockQuantity">Stock</label>
+            <input
+              id="stockQuantity"
+              name="stockQuantity"
+              type="number"
+              [(ngModel)]="form.stockQuantity"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              min="0"
+              step="1"
+              required />
+          </div>
+
+          <div class="field-group">
+            <label for="categoryId">Category</label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              [(ngModel)]="form.categoryId"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              [disabled]="isLoadingCategories() || categoryOptions().length === 0"
+              required>
+              @if (isLoadingCategories()) {
+                <option [ngValue]="0">Loading categories...</option>
+              } @else if (categoryOptions().length === 0) {
+                <option [ngValue]="0">No categories found</option>
+              } @else {
+                @for (category of categoryOptions(); track category.id) {
+                  <option [ngValue]="category.id">{{ category.name }}</option>
+                }
+              }
+            </select>
+            @if (categoryErrorMessage()) {
+              <button type="button" class="inline-button" (click)="loadCategories()">Reload categories</button>
+            }
+          </div>
+
+          <div class="field-group">
+            <label for="gender">Gender</label>
+            <select
+              id="gender"
+              name="gender"
+              [(ngModel)]="form.gender"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              required>
+              @for (gender of genderOptions; track gender) {
+                <option [ngValue]="gender">{{ getProductGenderLabel(gender) }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="section-heading">
+          <p class="eyebrow">Attributes</p>
+          <h2>Catalog data</h2>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="origin">Origin</label>
+            <input
+              id="origin"
+              name="origin"
+              type="text"
+              [(ngModel)]="form.origin"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              maxlength="50"
+              required />
+          </div>
+
+          <div class="field-group">
+            <label for="sizeRange">Size range</label>
+            <input
+              id="sizeRange"
+              name="sizeRange"
+              type="text"
+              [(ngModel)]="form.sizeRange"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              maxlength="50"
+              required />
+          </div>
+
+          <div class="field-group">
+            <label for="material">Material</label>
+            <input
+              id="material"
+              name="material"
+              type="text"
+              [(ngModel)]="form.material"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              maxlength="50"
+              required />
+          </div>
+
+          <div class="field-group wide-field">
+            <label for="imageUrl">Image URL</label>
+            <input
+              id="imageUrl"
+              name="imageUrl"
+              type="url"
+              [(ngModel)]="form.imageUrl"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              required />
+          </div>
+
+          <div class="field-group wide-field">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              [(ngModel)]="form.description"
+              (focus)="clearError()"
+              (ngModelChange)="clearError()"
+              rows="5"
+              required></textarea>
+          </div>
+        </div>
+      </div>
+
+      @if (errorMessage()) {
+        <p role="alert" class="form-error">{{ errorMessage() }}</p>
+      }
+
+      @if (categoryErrorMessage()) {
+        <p role="alert" class="form-error">{{ categoryErrorMessage() }}</p>
+      }
+
+      <div class="form-actions">
+        <a routerLink="/home" class="secondary-button">Cancel</a>
+        <button
+          type="submit"
+          [disabled]="isSubmitting() || isLoadingCategories() || categoryOptions().length === 0"
+          class="primary-button">
+          {{ isSubmitting() ? 'Adding product...' : 'Add product' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

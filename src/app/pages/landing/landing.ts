@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Inject, PLATFORM_ID } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +9,7 @@ import { getProductGenderLabel, Product, ProductService } from '../../services/p
 
 @Component({
   selector: 'app-landing',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './landing.html',
   styleUrl: './landing.css',
 })

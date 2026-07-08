@@ -28,6 +28,19 @@ export interface Product {
   createdAt: string;
 }
 
+export interface ProductCreateRequest {
+  name: string;
+  price: number;
+  origin: string;
+  sizeRange: string;
+  material: string;
+  gender: ProductGender;
+  imageUrl: string;
+  stockQuantity: number;
+  description: string;
+  categoryId: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private readonly apiUrl = 'https://localhost:7039/api/Products';
@@ -43,6 +56,12 @@ export class ProductService {
   getProduct(id: number) {
     return this.http.get<ApiResponse<Product>>(`${this.apiUrl}/${id}`).pipe(
       map(response => unwrapApiResponse(response, 'Product could not be loaded.'))
+    );
+  }
+
+  createProduct(request: ProductCreateRequest) {
+    return this.http.post<ApiResponse<Product>>(this.apiUrl, request).pipe(
+      map(response => unwrapApiResponse(response, 'Product could not be created.'))
     );
   }
 }
