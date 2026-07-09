@@ -1,12 +1,18 @@
-import { inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthService, UserPermission } from '../services/auth.service';
 
 export const permissionGuard: CanActivateFn = route => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const platformId = inject(PLATFORM_ID);
   const permission = route.data['permission'] as UserPermission | undefined;
   const requiresAdminPanelAccess = route.data['requiresAdminPanelAccess'] === true;
+
+  if (!isPlatformBrowser(platformId)) {
+    return true;
+  }
 
   if (requiresAdminPanelAccess && authService.canAccessAdminPanel()) {
     return true;
