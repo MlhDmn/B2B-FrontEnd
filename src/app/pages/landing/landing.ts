@@ -25,6 +25,7 @@ export class Landing implements OnInit {
   errorMessage = signal('');
   isLoading = signal(true);
   isSidebarOpen = signal(false);
+  selectedProduct = signal<Product | null>(null);
 
   readonly getProductGenderLabel = getProductGenderLabel;
 
@@ -84,6 +85,14 @@ export class Landing implements OnInit {
 
   closeSidebar(): void {
     this.isSidebarOpen.set(false);
+  }
+
+  openProductDetails(product: Product): void {
+    this.selectedProduct.set(product);
+  }
+
+  closeProductDetails(): void {
+    this.selectedProduct.set(null);
   }
 
   canAccessAdminPanel(): boolean {

@@ -41,6 +41,11 @@ export interface ProductCreateRequest {
   categoryId: number;
 }
 
+export interface ProductUpdateRequest extends ProductCreateRequest {
+  id: number;
+  isActive: boolean;
+}
+
 export interface PagedProductsResponse {
   items: Product[];
   pageNumber: number;
@@ -74,6 +79,12 @@ export class ProductService {
   createProduct(request: ProductCreateRequest) {
     return this.http.post<ApiResponse<Product>>(this.apiUrl, request).pipe(
       map(response => unwrapApiResponse(response, 'Product could not be created.'))
+    );
+  }
+
+  updateProduct(request: ProductUpdateRequest) {
+    return this.http.put<ApiResponse<Product>>(`${this.apiUrl}/${request.id}`, request).pipe(
+      map(response => unwrapApiResponse(response, 'Product could not be updated.'))
     );
   }
 }

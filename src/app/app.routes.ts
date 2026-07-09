@@ -3,6 +3,7 @@ import { Login } from './pages/login/login';
 import { Signup } from './pages/signup/signup';
 import { Landing } from './pages/landing/landing';
 import { AddProduct } from './pages/add-product/add-product';
+import { EditProducts } from './pages/edit-products/edit-products';
 import { authGuard } from './core/auth.guard';
 import { Unauthorized } from './pages/unauthorized/unauthorized';
 import { AdminPanel } from './pages/admin-panel/admin-panel';
@@ -29,14 +30,9 @@ export const routes: Routes = [
   },
   {
     path: 'admin/products/edit',
-    component: AdminFeature,
+    component: EditProducts,
     canActivate: [authGuard, permissionGuard],
-    data: {
-      permission: UserPermission.EditProducts,
-      eyebrow: 'Product tools',
-      title: 'Edit Products',
-      description: 'Update existing product information from this workspace.'
-    }
+    data: { permission: UserPermission.EditProducts }
   },
   {
     path: 'admin/products/delete',
