@@ -9,8 +9,6 @@ interface AdminAction {
   permission: UserPermission;
 }
 
-//Admin panelde f5 atınca unauth atıyor
-
 @Component({
   selector: 'app-admin-panel',
   imports: [RouterLink],
@@ -24,6 +22,18 @@ export class AdminPanel {
       description: 'Create a new catalog item.',
       route: '/products/add',
       permission: UserPermission.AddProducts
+    },
+    {
+      title: 'Edit Products',
+      description: 'Update existing product records.',
+      route: '/admin/products/edit',
+      permission: UserPermission.EditProducts
+    },
+    {
+      title: 'Delete Products',
+      description: 'Remove product records from the catalog.',
+      route: '/admin/products/delete',
+      permission: UserPermission.DeleteProducts
     },
     {
       title: 'Manage Categories',
