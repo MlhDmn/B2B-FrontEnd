@@ -129,12 +129,20 @@ export class Landing implements OnInit {
     this.loadProducts(nextPage);
   }
 
+  goToFirstPage(): void {
+    this.goToPage(1);
+  }
+
   goToPreviousPage(): void {
     this.goToPage(this.currentPage() - 1);
   }
 
   goToNextPage(): void {
     this.goToPage(this.currentPage() + 1);
+  }
+
+  goToLastPage(): void {
+    this.goToPage(this.totalPages());
   }
 
   formatPrice(price: number): string {

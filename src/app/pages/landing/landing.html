@@ -26,25 +26,6 @@
   </header>
 
   <section class="catalog-body">
-    <div class="summary-strip">
-      <div>
-        <span>Total products</span>
-        <strong>{{ totalCount() }}</strong>
-      </div>
-      <div>
-        <span>Page</span>
-        <strong>{{ currentPage() }} / {{ totalPages() }}</strong>
-      </div>
-      <div>
-        <span>Status</span>
-        <strong>{{ isLoading() ? 'Loading' : 'Ready' }}</strong>
-      </div>
-      <div>
-        <span>Currency</span>
-        <strong>TRY</strong>
-      </div>
-    </div>
-
     @if (isLoading()) {
       <div class="state-panel">
         <span class="loader"></span>
@@ -118,9 +99,19 @@
           <button
             type="button"
             class="pagination-button"
+            (click)="goToFirstPage()"
+            [disabled]="currentPage() === 1"
+            aria-label="First page">
+            &laquo;
+          </button>
+
+          <button
+            type="button"
+            class="pagination-button"
             (click)="goToPreviousPage()"
-            [disabled]="currentPage() === 1">
-            Previous
+            [disabled]="currentPage() === 1"
+            aria-label="Previous page">
+            &lsaquo;
           </button>
 
           <div class="page-buttons">
@@ -140,8 +131,18 @@
             type="button"
             class="pagination-button"
             (click)="goToNextPage()"
-            [disabled]="currentPage() === totalPages()">
-            Next
+            [disabled]="currentPage() === totalPages()"
+            aria-label="Next page">
+            &rsaquo;
+          </button>
+
+          <button
+            type="button"
+            class="pagination-button"
+            (click)="goToLastPage()"
+            [disabled]="currentPage() === totalPages()"
+            aria-label="Last page">
+            &raquo;
           </button>
         </nav>
       }
