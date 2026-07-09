@@ -18,12 +18,6 @@ interface AdminAction {
 export class AdminPanel {
   private readonly actions: AdminAction[] = [
     {
-      title: 'Products',
-      description: 'View the catalog and product inventory.',
-      route: '/home',
-      permission: UserPermission.ViewProducts
-    },
-    {
       title: 'Add Product',
       description: 'Create a new catalog item.',
       route: '/products/add',
