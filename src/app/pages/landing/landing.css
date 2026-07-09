@@ -229,6 +229,196 @@ h1 {
   padding: 24px 0 40px;
 }
 
+.search-bar {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.search-bar label {
+  color: #24527a;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.search-controls {
+  display: flex;
+  gap: 8px;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 14px 30px rgb(14 165 233 / 10%);
+  padding: 8px;
+}
+
+.search-controls input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: #18304b;
+  font: inherit;
+  outline: none;
+  padding: 0 6px;
+}
+
+.search-controls input::placeholder {
+  color: #7a97ad;
+}
+
+.search-clear-button,
+.search-submit-button {
+  min-height: 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.search-clear-button {
+  width: 40px;
+  border: 1px solid #a7d8f0;
+  background: #fff;
+  color: #24527a;
+}
+
+.search-submit-button {
+  border: 0;
+  background: #0284c7;
+  color: #fff;
+  padding: 0 16px;
+  box-shadow: 0 10px 20px rgb(2 132 199 / 18%);
+}
+
+.search-clear-button:hover {
+  background: #e0f7ff;
+}
+
+.search-submit-button:hover {
+  background: #0369a1;
+}
+
+.catalog-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.catalog-results {
+  min-width: 0;
+}
+
+.filter-panel {
+  position: sticky;
+  top: 88px;
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 14px 30px rgb(14 165 233 / 10%);
+  padding: 16px;
+}
+
+.filter-panel form {
+  display: grid;
+  gap: 14px;
+}
+
+.filter-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.filter-heading h2 {
+  font-size: 1.05rem;
+}
+
+.filter-field {
+  display: grid;
+  gap: 8px;
+}
+
+.filter-field label,
+.filter-check {
+  color: #24527a;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.filter-field input,
+.filter-field select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #a7d8f0;
+  border-radius: 6px;
+  background: #f8fdff;
+  color: #18304b;
+  font: inherit;
+  outline: none;
+  padding: 0 10px;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgb(2 132 199 / 16%);
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.filter-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: #0284c7;
+}
+
+.filter-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.filter-apply-button,
+.filter-clear-button {
+  min-height: 40px;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.filter-apply-button {
+  border: 0;
+  background: #0284c7;
+  color: #fff;
+  box-shadow: 0 10px 20px rgb(2 132 199 / 18%);
+}
+
+.filter-clear-button {
+  border: 1px solid #a7d8f0;
+  background: #fff;
+  color: #24527a;
+}
+
+.filter-apply-button:hover {
+  background: #0369a1;
+}
+
+.filter-clear-button:hover {
+  background: #e0f7ff;
+}
+
 .state-panel {
   display: flex;
   align-items: center;
@@ -574,6 +764,22 @@ h1 {
   .pagination-nav {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .search-controls {
+    flex-wrap: wrap;
+  }
+
+  .search-controls input {
+    flex-basis: 100%;
+  }
+
+  .catalog-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-panel {
+    position: static;
   }
 
   .product-modal {

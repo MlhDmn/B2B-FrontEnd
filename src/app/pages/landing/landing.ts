@@ -1,15 +1,16 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Inject, PLATFORM_ID } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
 import { AuthService } from '../../services/auth.service';
-import { getProductGenderLabel, Product, ProductService } from '../../services/product.service';
+import { getProductGenderLabel, Product, ProductGender, ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-landing',
-  imports: [RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: './landing.html',
   styleUrl: './landing.css',
 })
@@ -26,6 +27,19 @@ export class Landing implements OnInit {
   isLoading = signal(true);
   isSidebarOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
+  searchTerm = signal('');
+  filterCategoryId = signal('');
+  filterGender = signal('');
+  filterMinPrice = signal('');
+  filterMaxPrice = signal('');
+  filterInStockOnly = signal(false);
+
+  readonly genderOptions = [
+    ProductGender.Unisex,
+    ProductGender.Men,
+    ProductGender.Women,
+    ProductGender.Kids
+  ];
 
   readonly getProductGenderLabel = getProductGenderLabel;
 
@@ -48,7 +62,7 @@ export class Landing implements OnInit {
     this.errorMessage.set('');
     this.isLoading.set(true);
 
-    this.productService.getProducts(pageNumber, this.pageSize).pipe(
+    this.productService.getProducts(pageNumber, this.pageSize, this.searchTerm()).pipe(
       finalize(() => {
         this.isLoading.set(false);
       })
@@ -93,6 +107,62 @@ export class Landing implements OnInit {
 
   closeProductDetails(): void {
     this.selectedProduct.set(null);
+  }
+
+  updateSearchTerm(value: string): void {
+    this.searchTerm.set(value);
+  }
+
+  submitSearch(): void {
+    this.loadProducts(1);
+  }
+
+  clearSearch(): void {
+    this.searchTerm.set('');
+    this.loadProducts(1);
+  }
+
+  categoryOptions(): Array<{ id: number; name: string }> {
+    const categories = new Map<number, string>();
+
+    for (const product of this.products()) {
+      categories.set(product.categoryId, product.categoryName);
+    }
+
+    return Array.from(categories, ([id, name]) => ({ id, name }));
+  }
+
+  updateFilterCategory(value: string): void {
+    this.filterCategoryId.set(value);
+  }
+
+  updateFilterGender(value: string): void {
+    this.filterGender.set(value);
+  }
+
+  updateFilterMinPrice(value: string): void {
+    this.filterMinPrice.set(value);
+  }
+
+  updateFilterMaxPrice(value: string): void {
+    this.filterMaxPrice.set(value);
+  }
+
+  updateFilterInStockOnly(value: boolean): void {
+    this.filterInStockOnly.set(value);
+  }
+
+  applyFilters(): void {
+    this.loadProducts(1);
+  }
+
+  clearFilters(): void {
+    this.filterCategoryId.set('');
+    this.filterGender.set('');
+    this.filterMinPrice.set('');
+    this.filterMaxPrice.set('');
+    this.filterInStockOnly.set(false);
+    this.loadProducts(1);
   }
 
   canAccessAdminPanel(): boolean {

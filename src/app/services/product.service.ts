@@ -62,9 +62,19 @@ export class ProductService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getProducts(pageNumber = 1, pageSize = 20) {
+  getProducts(pageNumber = 1, pageSize = 20, searchTerm = '') {
+    const params = new URLSearchParams({
+      pageNumber: String(pageNumber),
+      pageSize: String(pageSize)
+    });
+
+    const normalizedSearchTerm = searchTerm.trim();
+    if (normalizedSearchTerm) {
+      params.set('searchTerm', normalizedSearchTerm);
+    }
+
     return this.http.get<ApiResponse<PagedProductsResponse>>(
-      `${this.apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+      `${this.apiUrl}?${params.toString()}`
     ).pipe(
       map(response => unwrapApiResponse(response, 'Products could not be loaded.'))
     );

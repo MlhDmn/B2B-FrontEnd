@@ -10,6 +10,7 @@
       </div>
 
       <div class="header-actions">
+        <button type="button" (click)="logout()" class="secondary-button">Log out</button>
         <button
           type="button"
           (click)="toggleSidebar()"
@@ -20,133 +21,229 @@
           <span></span>
           <span></span>
         </button>
-        <button type="button" (click)="logout()" class="secondary-button">Log out</button>
       </div>
     </div>
   </header>
 
   <section class="catalog-body">
-    @if (isLoading()) {
-      <div class="state-panel">
-        <span class="loader"></span>
-        <p>Loading products...</p>
-      </div>
-    } @else if (errorMessage()) {
-      <div class="state-panel error-panel">
-        <p role="alert">{{ errorMessage() }}</p>
-        <button type="button" (click)="loadProducts()" class="secondary-button">Try again</button>
-      </div>
-    } @else if (products().length === 0) {
-      <div class="state-panel">
-        <p>No products found.</p>
-      </div>
-    } @else {
-      <div class="pagination-summary">
-        <p>Showing {{ pageStart() }}-{{ pageEnd() }} of {{ totalCount() }} products</p>
-      </div>
-
-      <div class="product-grid">
-        @for (product of products(); track product.id) {
-          <article
-            class="product-card"
-            role="button"
-            tabindex="0"
-            (click)="openProductDetails(product)"
-            (keydown.enter)="openProductDetails(product)"
-            (keydown.space)="openProductDetails(product)">
-            <div class="product-image">
-              <img [src]="product.imageUrl" [alt]="product.name" />
-              <span>{{ product.stockQuantity }} in stock</span>
-            </div>
-
-            <div class="product-content">
-              <div class="product-heading">
-                <div>
-                  <p class="category">{{ product.categoryName }}</p>
-                  <h2>{{ product.name }}</h2>
-                </div>
-                <strong>{{ formatPrice(product.price) }}</strong>
-              </div>
-
-              <p class="description">{{ product.description }}</p>
-              <p class="category-description">{{ product.categoryDescription }}</p>
-
-              <dl>
-                <div>
-                  <dt>Origin</dt>
-                  <dd>{{ product.origin }}</dd>
-                </div>
-                <div>
-                  <dt>Gender</dt>
-                  <dd>{{ getProductGenderLabel(product.gender) }}</dd>
-                </div>
-                <div>
-                  <dt>Material</dt>
-                  <dd>{{ product.material }}</dd>
-                </div>
-                <div>
-                  <dt>Sizes</dt>
-                  <dd>{{ product.sizeRange }}</dd>
-                </div>
-              </dl>
-            </div>
-          </article>
+    <form class="search-bar" role="search" (submit)="$event.preventDefault(); submitSearch()">
+      <label for="productSearch">Search products</label>
+      <div class="search-controls">
+        <input
+          id="productSearch"
+          name="productSearch"
+          type="text"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="updateSearchTerm($event)"
+          placeholder="Search by name, description, origin, material..." />
+        @if (searchTerm()) {
+          <button type="button" class="search-clear-button" aria-label="Clear search" (click)="clearSearch()">x</button>
         }
+        <button type="submit" class="search-submit-button">Search</button>
       </div>
+    </form>
 
-      @if (totalPages() > 1) {
-        <nav class="pagination-nav" aria-label="Product pages">
-          <button
-            type="button"
-            class="pagination-button"
-            (click)="goToFirstPage()"
-            [disabled]="currentPage() === 1"
-            aria-label="First page">
-            &laquo;
-          </button>
+    <div class="catalog-layout">
+      <aside class="filter-panel" aria-labelledby="filter-title">
+        <form (submit)="$event.preventDefault(); applyFilters()">
+          <div class="filter-heading">
+            <p class="eyebrow">Refine</p>
+            <h2 id="filter-title">Filters</h2>
+          </div>
 
-          <button
-            type="button"
-            class="pagination-button"
-            (click)="goToPreviousPage()"
-            [disabled]="currentPage() === 1"
-            aria-label="Previous page">
-            &lsaquo;
-          </button>
+          <div class="filter-field">
+            <label for="filterCategory">Category</label>
+            <select
+              id="filterCategory"
+              name="filterCategory"
+              [ngModel]="filterCategoryId()"
+              (ngModelChange)="updateFilterCategory($event)">
+              <option value="">All categories</option>
+              @for (category of categoryOptions(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </div>
 
-          <div class="page-buttons">
-            @for (page of pageNumbers(); track page) {
-              <button
-                type="button"
-                class="page-button"
-                [class.active]="page === currentPage()"
-                [attr.aria-current]="page === currentPage() ? 'page' : null"
-                (click)="goToPage(page)">
-                {{ page }}
-              </button>
+          <div class="filter-field">
+            <label for="filterGender">Gender</label>
+            <select
+              id="filterGender"
+              name="filterGender"
+              [ngModel]="filterGender()"
+              (ngModelChange)="updateFilterGender($event)">
+              <option value="">All genders</option>
+              @for (gender of genderOptions; track gender) {
+                <option [value]="gender">{{ getProductGenderLabel(gender) }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="filter-grid">
+            <div class="filter-field">
+              <label for="filterMinPrice">Min price</label>
+              <input
+                id="filterMinPrice"
+                name="filterMinPrice"
+                type="number"
+                min="0"
+                [ngModel]="filterMinPrice()"
+                (ngModelChange)="updateFilterMinPrice($event)" />
+            </div>
+
+            <div class="filter-field">
+              <label for="filterMaxPrice">Max price</label>
+              <input
+                id="filterMaxPrice"
+                name="filterMaxPrice"
+                type="number"
+                min="0"
+                [ngModel]="filterMaxPrice()"
+                (ngModelChange)="updateFilterMaxPrice($event)" />
+            </div>
+          </div>
+
+          <label class="filter-check">
+            <input
+              id="filterInStock"
+              name="filterInStock"
+              type="checkbox"
+              [ngModel]="filterInStockOnly()"
+              (ngModelChange)="updateFilterInStockOnly($event)" />
+            <span>In stock only</span>
+          </label>
+
+          <div class="filter-actions">
+            <button type="submit" class="filter-apply-button">Apply</button>
+            <button type="button" class="filter-clear-button" (click)="clearFilters()">Clear</button>
+          </div>
+        </form>
+      </aside>
+
+      <div class="catalog-results">
+        @if (isLoading()) {
+          <div class="state-panel">
+            <span class="loader"></span>
+            <p>Loading products...</p>
+          </div>
+        } @else if (errorMessage()) {
+          <div class="state-panel error-panel">
+            <p role="alert">{{ errorMessage() }}</p>
+            <button type="button" (click)="loadProducts()" class="secondary-button">Try again</button>
+          </div>
+        } @else if (products().length === 0) {
+          <div class="state-panel">
+            <p>No products found.</p>
+          </div>
+        } @else {
+          <div class="pagination-summary">
+            <p>Showing {{ pageStart() }}-{{ pageEnd() }} of {{ totalCount() }} products</p>
+          </div>
+
+          <div class="product-grid">
+            @for (product of products(); track product.id) {
+              <article
+                class="product-card"
+                role="button"
+                tabindex="0"
+                (click)="openProductDetails(product)"
+                (keydown.enter)="openProductDetails(product)"
+                (keydown.space)="openProductDetails(product)">
+                <div class="product-image">
+                  <img [src]="product.imageUrl" [alt]="product.name" />
+                  <span>{{ product.stockQuantity }} in stock</span>
+                </div>
+
+                <div class="product-content">
+                  <div class="product-heading">
+                    <div>
+                      <p class="category">{{ product.categoryName }}</p>
+                      <h2>{{ product.name }}</h2>
+                    </div>
+                    <strong>{{ formatPrice(product.price) }}</strong>
+                  </div>
+
+                  <p class="description">{{ product.description }}</p>
+                  <p class="category-description">{{ product.categoryDescription }}</p>
+
+                  <dl>
+                    <div>
+                      <dt>Origin</dt>
+                      <dd>{{ product.origin }}</dd>
+                    </div>
+                    <div>
+                      <dt>Gender</dt>
+                      <dd>{{ getProductGenderLabel(product.gender) }}</dd>
+                    </div>
+                    <div>
+                      <dt>Material</dt>
+                      <dd>{{ product.material }}</dd>
+                    </div>
+                    <div>
+                      <dt>Sizes</dt>
+                      <dd>{{ product.sizeRange }}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </article>
             }
           </div>
 
-          <button
-            type="button"
-            class="pagination-button"
-            (click)="goToNextPage()"
-            [disabled]="currentPage() === totalPages()"
-            aria-label="Next page">
-            &rsaquo;
-          </button>
+          @if (totalPages() > 1) {
+            <nav class="pagination-nav" aria-label="Product pages">
+              <button
+                type="button"
+                class="pagination-button"
+                (click)="goToFirstPage()"
+                [disabled]="currentPage() === 1"
+                aria-label="First page">
+                &laquo;
+              </button>
 
-          <button
-            type="button"
-            class="pagination-button"
-            (click)="goToLastPage()"
-            [disabled]="currentPage() === totalPages()"
-            aria-label="Last page">
-            &raquo;
-          </button>
-        </nav>
-      }
-    }
+              <button
+                type="button"
+                class="pagination-button"
+                (click)="goToPreviousPage()"
+                [disabled]="currentPage() === 1"
+                aria-label="Previous page">
+                &lsaquo;
+              </button>
+
+              <div class="page-buttons">
+                @for (page of pageNumbers(); track page) {
+                  <button
+                    type="button"
+                    class="page-button"
+                    [class.active]="page === currentPage()"
+                    [attr.aria-current]="page === currentPage() ? 'page' : null"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                  </button>
+                }
+              </div>
+
+              <button
+                type="button"
+                class="pagination-button"
+                (click)="goToNextPage()"
+                [disabled]="currentPage() === totalPages()"
+                aria-label="Next page">
+                &rsaquo;
+              </button>
+
+              <button
+                type="button"
+                class="pagination-button"
+                (click)="goToLastPage()"
+                [disabled]="currentPage() === totalPages()"
+                aria-label="Last page">
+                &raquo;
+              </button>
+            </nav>
+          }
+        }
+      </div>
+    </div>
   </section>
 
   <aside class="right-sidebar" [class.open]="isSidebarOpen()" aria-label="Main navigation">
