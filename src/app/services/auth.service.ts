@@ -30,6 +30,21 @@ export interface AuthResponse {
   user: AuthUser;
 }
 
+export enum UserPermission {
+  ViewProducts = 1,
+  AddProducts = 2,
+  DeleteProducts = 4,
+  EditProducts = 8,
+  ManageCategories = 16,
+  ManageUsers = 32,
+  Admin = ViewProducts | AddProducts | DeleteProducts | EditProducts | ManageCategories | ManageUsers
+}
+
+interface JwtPayload {
+  permissions?: string | number;
+  [key: string]: unknown;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly apiUrl = 'http://localhost:5072/api/auth';
@@ -68,6 +83,30 @@ export class AuthService {
     return !!this.getToken();
   }
 
+  getPermissions(): number {
+    const token = this.getToken();
+
+    if (!token) {
+      return 0;
+    }
+
+    const payload = this.decodeTokenPayload(token);
+    const permissions = payload?.permissions;
+
+    return typeof permissions === 'number'
+      ? permissions
+      : Number(permissions) || 0;
+  }
+
+  hasPermission(permission: UserPermission): boolean {
+    return (this.getPermissions() & permission) === permission;
+  }
+
+  canAccessAdminPanel(): boolean {
+    const managementPermissions = UserPermission.Admin & ~UserPermission.ViewProducts;
+    return (this.getPermissions() & managementPermissions) !== 0;
+  }
+
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
@@ -80,4 +119,23 @@ export class AuthService {
     }
   }
 
+  private decodeTokenPayload(token: string): JwtPayload | null {
+    const payload = token.split('.')[1];
+
+    if (!payload || !isPlatformBrowser(this.platformId)) {
+      return null;
+    }
+
+    try {
+      const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const paddedPayload = normalizedPayload.padEnd(
+        normalizedPayload.length + (4 - normalizedPayload.length % 4) % 4,
+        '='
+      );
+
+      return JSON.parse(atob(paddedPayload)) as JwtPayload;
+    } catch {
+      return null;
+    }
+  }
 }

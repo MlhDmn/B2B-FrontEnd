@@ -1,0 +1,154 @@
+.admin-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgb(255 209 102 / 28%), transparent 28%),
+    linear-gradient(135deg, #ecfeff 0%, #f8fafc 50%, #fff7ed 100%);
+  color: #18304b;
+}
+
+.admin-header {
+  border-bottom: 1px solid #bae6fd;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 12px 28px rgb(14 165 233 / 10%);
+}
+
+.header-inner {
+  width: min(980px, calc(100% - 32px));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  background: #ffb703;
+  color: #102a43;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 10px 22px rgb(251 146 60 / 22%);
+}
+
+.eyebrow {
+  margin: 0 0 3px;
+  color: #0284c7;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 1.55rem;
+  line-height: 1.15;
+}
+
+.admin-body {
+  width: min(980px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0 40px;
+}
+
+.intro-panel,
+.empty-panel,
+.action-card {
+  border: 1px solid #bae6fd;
+  border-radius: 8px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 16px 34px rgb(14 165 233 / 12%);
+}
+
+.intro-panel {
+  display: grid;
+  gap: 8px;
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.intro-panel h2 {
+  font-size: 1.35rem;
+}
+
+.intro-panel p:last-child,
+.empty-panel {
+  color: #42617d;
+  font-weight: 700;
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.action-card {
+  display: grid;
+  gap: 8px;
+  color: #18304b;
+  padding: 18px;
+  text-decoration: none;
+}
+
+.action-card:hover {
+  border-color: #38bdf8;
+  background: #ecfeff;
+}
+
+.action-card span {
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.action-card small {
+  color: #42617d;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.empty-panel {
+  padding: 18px;
+}
+
+.secondary-button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #a7d8f0;
+  border-radius: 6px;
+  background: #fff;
+  color: #24527a;
+  cursor: pointer;
+  padding: 0 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.secondary-button:hover {
+  background: #e0f7ff;
+}
+
+@media (max-width: 640px) {
+  .header-inner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

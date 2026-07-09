@@ -86,6 +86,10 @@ export class Landing implements OnInit {
     this.isSidebarOpen.set(false);
   }
 
+  canAccessAdminPanel(): boolean {
+    return this.authService.canAccessAdminPanel();
+  }
+
   totalPages(): number {
     return this.totalPageCount();
   }

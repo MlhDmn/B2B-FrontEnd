@@ -156,10 +156,12 @@
         <span>Products</span>
         <small>{{ totalCount() }} items</small>
       </a>
-      <a routerLink="/products/add" class="nav-item" (click)="closeSidebar()">
-        <span>Add Product</span>
-        <small>Create catalog item</small>
-      </a>
+      @if (canAccessAdminPanel()) {
+        <a routerLink="/admin" class="nav-item" (click)="closeSidebar()">
+          <span>Admin Panel</span>
+          <small>Manage permitted tools</small>
+        </a>
+      }
       <a href="" class="nav-item" (click)="$event.preventDefault()">
         <span>Wish List</span>
         <small>Saved products</small>

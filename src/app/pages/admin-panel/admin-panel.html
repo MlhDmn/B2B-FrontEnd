@@ -1,0 +1,38 @@
+<main class="admin-shell">
+  <header class="admin-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+        <div>
+          <p class="eyebrow">Workspace</p>
+          <h1>Admin panel</h1>
+        </div>
+      </div>
+
+      <a routerLink="/home" class="secondary-button">Back to products</a>
+    </div>
+  </header>
+
+  <section class="admin-body">
+    <section class="intro-panel" aria-labelledby="admin-title">
+      <p class="eyebrow">Permissions</p>
+      <h2 id="admin-title">Choose what you want to manage</h2>
+      <p>Only actions allowed by your account permissions are shown here.</p>
+    </section>
+
+    @if (allowedActions().length > 0) {
+      <div class="action-grid">
+        @for (action of allowedActions(); track action.route) {
+          <a [routerLink]="action.route" class="action-card">
+            <span>{{ action.title }}</span>
+            <small>{{ action.description }}</small>
+          </a>
+        }
+      </div>
+    } @else {
+      <div class="empty-panel">
+        <p>You do not have any admin actions available right now.</p>
+      </div>
+    }
+  </section>
+</main>

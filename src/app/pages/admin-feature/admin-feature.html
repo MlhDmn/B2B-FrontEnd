@@ -1,0 +1,23 @@
+<main class="feature-shell">
+  <header class="feature-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/admin" class="brand-mark" aria-label="Admin panel">B2B</a>
+        <div>
+          <p class="eyebrow">{{ eyebrow }}</p>
+          <h1>{{ title }}</h1>
+        </div>
+      </div>
+
+      <a routerLink="/admin" class="secondary-button">Back to admin panel</a>
+    </div>
+  </header>
+
+  <section class="feature-body">
+    <section class="feature-panel" aria-labelledby="feature-title">
+      <p class="eyebrow">Admin tool</p>
+      <h2 id="feature-title">{{ title }}</h2>
+      <p>{{ description }}</p>
+    </section>
+  </section>
+</main>
