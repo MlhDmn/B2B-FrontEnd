@@ -64,6 +64,10 @@ export class AuthService {
       : null;
   }
 
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
   logout(): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem(this.tokenKey);
@@ -71,7 +75,7 @@ export class AuthService {
   }
 
   private saveToken(token: string): void {
-    if (isPlatformBrowser(this.platformId)) {
+    if (token && isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.tokenKey, token);
     }
   }

@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
 import { AuthService } from '../../services/auth.service';
@@ -31,6 +31,7 @@ export class Landing implements OnInit {
   constructor(
     private readonly productService: ProductService,
     private readonly authService: AuthService,
+    private readonly router: Router,
     @Inject(PLATFORM_ID) private readonly platformId: object
   ) {}
 
@@ -73,6 +74,8 @@ export class Landing implements OnInit {
 
   logout(): void {
     this.authService.logout();
+    this.closeSidebar();
+    this.router.navigate(['/login']);
   }
 
   toggleSidebar(): void {

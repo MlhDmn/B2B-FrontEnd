@@ -1,7 +1,7 @@
 .auth-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.78fr);
+  place-items: center;
   background: #f6f7f9;
   color: #172033;
 }
@@ -152,59 +152,7 @@ h1 {
   text-align: center;
 }
 
-.auth-aside {
-  position: relative;
-  min-height: 100vh;
-  background:
-    linear-gradient(rgb(17 24 39 / 70%), rgb(17 24 39 / 70%)),
-    url('https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=1200&q=80') center / cover;
-}
-
-.metric-stack {
-  position: absolute;
-  right: 32px;
-  bottom: 32px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: min(520px, calc(100% - 64px));
-  border: 1px solid rgb(255 255 255 / 20%);
-  border-radius: 8px;
-  background: rgb(15 23 42 / 72%);
-  backdrop-filter: blur(10px);
-}
-
-.metric-stack div {
-  display: grid;
-  gap: 6px;
-  padding: 18px;
-  color: #e2e8f0;
-}
-
-.metric-stack div + div {
-  border-left: 1px solid rgb(255 255 255 / 14%);
-}
-
-.metric-stack span {
-  color: #cbd5e1;
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.metric-stack strong {
-  color: #fff;
-  font-size: 1.4rem;
-}
-
 @media (max-width: 860px) {
-  .auth-shell {
-    grid-template-columns: 1fr;
-  }
-
-  .auth-aside {
-    display: none;
-  }
-
   .auth-panel {
     padding: 24px 16px;
   }
