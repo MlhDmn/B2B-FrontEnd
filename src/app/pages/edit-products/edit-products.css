@@ -129,6 +129,18 @@ h1 {
   min-height: 44px;
 }
 
+.locked-product-name {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #a7d8f0;
+  border-radius: 6px;
+  background: #f8fdff;
+  color: #18304b;
+  padding: 0 12px;
+  font-weight: 800;
+}
+
 .field-group textarea {
   min-height: 124px;
   padding-top: 12px;

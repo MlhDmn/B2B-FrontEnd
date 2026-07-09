@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, UserPermission } from '../../services/auth.service';
 import { getProductGenderLabel, Product, ProductGender, ProductService } from '../../services/product.service';
 
 @Component({
@@ -167,6 +167,11 @@ export class Landing implements OnInit {
 
   canAccessAdminPanel(): boolean {
     return this.authService.canAccessAdminPanel();
+  }
+
+  canEditAndDeleteProducts(): boolean {
+    return this.authService.hasPermission(UserPermission.EditProducts)
+      && this.authService.hasPermission(UserPermission.DeleteProducts);
   }
 
   totalPages(): number {

@@ -32,7 +32,7 @@ export const routes: Routes = [
     path: 'admin/products/edit',
     component: EditProducts,
     canActivate: [authGuard, permissionGuard],
-    data: { permission: UserPermission.EditProducts }
+    data: { permissions: [UserPermission.EditProducts, UserPermission.DeleteProducts] }
   },
   {
     path: 'admin/products/delete',

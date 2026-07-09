@@ -8,8 +8,6 @@
           <h1>Edit products</h1>
         </div>
       </div>
-
-      <a routerLink="/admin" class="secondary-button">Back to admin panel</a>
     </div>
   </header>
 
@@ -23,22 +21,30 @@
 
         <div class="field-group">
           <label for="selectedProduct">Product</label>
-          <select
-            id="selectedProduct"
-            name="selectedProduct"
-            [ngModel]="selectedProductId()"
-            (ngModelChange)="selectProduct($event)"
-            [disabled]="isLoadingProducts() || products().length === 0">
-            @if (isLoadingProducts()) {
-              <option [ngValue]="0">Loading products...</option>
-            } @else if (products().length === 0) {
-              <option [ngValue]="0">No products found</option>
-            } @else {
-              @for (product of products(); track product.id) {
-                <option [ngValue]="product.id">{{ product.name }}</option>
+          @if (isProductLocked()) {
+            <p
+              id="selectedProduct"
+              class="locked-product-name">
+              {{ selectedProduct()?.name || 'Loading product...' }}
+            </p>
+          } @else {
+            <select
+              id="selectedProduct"
+              name="selectedProduct"
+              [ngModel]="selectedProductId()"
+              (ngModelChange)="selectProduct($event)"
+              [disabled]="isLoadingProducts() || products().length === 0">
+              @if (isLoadingProducts()) {
+                <option [ngValue]="0">Loading products...</option>
+              } @else if (products().length === 0) {
+                <option [ngValue]="0">No products found</option>
+              } @else {
+                @for (product of products(); track product.id) {
+                  <option [ngValue]="product.id">{{ product.name }}</option>
+                }
               }
-            }
-          </select>
+            </select>
+          }
         </div>
       </div>
 
@@ -145,7 +151,7 @@
       }
 
       <div class="form-actions">
-        <a routerLink="/admin" class="secondary-button">Cancel</a>
+        <a routerLink="/home" class="secondary-button">Cancel</a>
         <button
           type="submit"
           [disabled]="isSubmitting() || form.id === 0 || isLoadingCategories() || isLoadingProducts()"

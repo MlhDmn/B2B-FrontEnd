@@ -305,6 +305,15 @@
           <p class="modal-price">{{ formatPrice(product.price) }}</p>
           <p class="modal-description">{{ product.description }}</p>
 
+          @if (canEditAndDeleteProducts()) {
+            <a
+              class="modal-edit-button"
+              [routerLink]="['/admin/products/edit']"
+              [queryParams]="{ productId: product.id }">
+              Edit product
+            </a>
+          }
+
           <dl class="modal-details">
             <div>
               <dt>Stock</dt>

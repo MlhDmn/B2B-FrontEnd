@@ -8,6 +8,7 @@ export const permissionGuard: CanActivateFn = route => {
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
   const permission = route.data['permission'] as UserPermission | undefined;
+  const permissions = route.data['permissions'] as UserPermission[] | undefined;
   const requiresAdminPanelAccess = route.data['requiresAdminPanelAccess'] === true;
 
   if (!isPlatformBrowser(platformId)) {
@@ -22,7 +23,11 @@ export const permissionGuard: CanActivateFn = route => {
     return router.createUrlTree(['/unauthorized']);
   }
 
-  if (!permission || authService.hasPermission(permission)) {
+  if (permissions && permissions.every(item => authService.hasPermission(item))) {
+    return true;
+  }
+
+  if (!permissions && (!permission || authService.hasPermission(permission))) {
     return true;
   }
 
