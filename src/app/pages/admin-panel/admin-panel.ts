@@ -9,6 +9,8 @@ interface AdminAction {
   permission: UserPermission;
 }
 
+//Admin panelde f5 atınca unauth atıyor
+
 @Component({
   selector: 'app-admin-panel',
   imports: [RouterLink],
