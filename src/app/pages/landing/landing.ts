@@ -11,6 +11,7 @@ import {
   getProductGenderLabel,
   Product,
   ProductGender,
+  ProductListFilters,
   ProductService,
   ProductUpdateRequest
 } from '../../services/product.service';
@@ -72,13 +73,14 @@ export class Landing implements OnInit {
     }
 
     this.loadProducts(1);
+    this.loadModalCategories();
   }
 
   loadProducts(pageNumber = this.currentPage()): void {
     this.errorMessage.set('');
     this.isLoading.set(true);
 
-    this.productService.getProducts(pageNumber, this.pageSize, this.searchTerm()).pipe(
+    this.productService.getProducts(pageNumber, this.pageSize, this.productFilters()).pipe(
       finalize(() => {
         this.isLoading.set(false);
       })
@@ -188,6 +190,13 @@ export class Landing implements OnInit {
   }
 
   categoryOptions(): Array<{ id: number; name: string }> {
+    if (this.modalCategoryOptions().length > 0) {
+      return this.modalCategoryOptions().map(category => ({
+        id: category.id,
+        name: category.name
+      }));
+    }
+
     const categories = new Map<number, string>();
 
     for (const product of this.products()) {
@@ -291,6 +300,38 @@ export class Landing implements OnInit {
     }).format(price);
   }
 
+  private productFilters(): ProductListFilters {
+    const filters: ProductListFilters = {
+      searchTerm: this.searchTerm()
+    };
+
+    const categoryId = this.parsePositiveNumber(this.filterCategoryId());
+    if (categoryId !== undefined) {
+      filters.categoryId = categoryId;
+    }
+
+    const gender = this.parsePositiveNumber(this.filterGender());
+    if (gender !== undefined) {
+      filters.gender = gender as ProductGender;
+    }
+
+    const minPrice = this.parseNonNegativeNumber(this.filterMinPrice());
+    if (minPrice !== undefined) {
+      filters.minPrice = minPrice;
+    }
+
+    const maxPrice = this.parseNonNegativeNumber(this.filterMaxPrice());
+    if (maxPrice !== undefined) {
+      filters.maxPrice = maxPrice;
+    }
+
+    if (this.filterInStockOnly()) {
+      filters.inStockOnly = true;
+    }
+
+    return filters;
+  }
+
   private loadModalCategories(): void {
     if (this.modalCategoryOptions().length > 0 || this.isLoadingCategories()) {
       return;
@@ -351,5 +392,19 @@ export class Landing implements OnInit {
       categoryId: 0,
       isActive: true
     };
+  }
+
+  private parsePositiveNumber(value: string): number | undefined {
+    const parsedValue = Number(value);
+    return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : undefined;
+  }
+
+  private parseNonNegativeNumber(value: string): number | undefined {
+    if (value.trim() === '') {
+      return undefined;
+    }
+
+    const parsedValue = Number(value);
+    return Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : undefined;
   }
 }

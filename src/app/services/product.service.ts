@@ -56,21 +56,50 @@ export interface PagedProductsResponse {
   hasNextPage: boolean;
 }
 
+export interface ProductListFilters {
+  searchTerm?: string;
+  categoryId?: number;
+  gender?: ProductGender;
+  minPrice?: number;
+  maxPrice?: number;
+  inStockOnly?: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private readonly apiUrl = 'http://localhost:5072/api/Products';
 
   constructor(private readonly http: HttpClient) {}
 
-  getProducts(pageNumber = 1, pageSize = 20, searchTerm = '') {
+  getProducts(pageNumber = 1, pageSize = 20, filters: ProductListFilters = {}) {
     const params = new URLSearchParams({
       pageNumber: String(pageNumber),
       pageSize: String(pageSize)
     });
 
-    const normalizedSearchTerm = searchTerm.trim();
+    const normalizedSearchTerm = filters.searchTerm?.trim();
     if (normalizedSearchTerm) {
       params.set('searchTerm', normalizedSearchTerm);
+    }
+
+    if (filters.categoryId) {
+      params.set('categoryId', String(filters.categoryId));
+    }
+
+    if (filters.gender) {
+      params.set('gender', String(filters.gender));
+    }
+
+    if (filters.minPrice !== undefined) {
+      params.set('minPrice', String(filters.minPrice));
+    }
+
+    if (filters.maxPrice !== undefined) {
+      params.set('maxPrice', String(filters.maxPrice));
+    }
+
+    if (filters.inStockOnly) {
+      params.set('inStockOnly', 'true');
     }
 
     return this.http.get<ApiResponse<PagedProductsResponse>>(
