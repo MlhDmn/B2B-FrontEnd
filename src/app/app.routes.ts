@@ -32,18 +32,7 @@ export const routes: Routes = [
     path: 'admin/products/edit',
     component: EditProducts,
     canActivate: [authGuard, permissionGuard],
-    data: { permissions: [UserPermission.EditProducts, UserPermission.DeleteProducts] }
-  },
-  {
-    path: 'admin/products/delete',
-    component: AdminFeature,
-    canActivate: [authGuard, permissionGuard],
-    data: {
-      permission: UserPermission.DeleteProducts,
-      eyebrow: 'Product tools',
-      title: 'Delete Products',
-      description: 'Remove catalog items when your account has delete access.'
-    }
+    data: { permission: UserPermission.EditProducts }
   },
   {
     path: 'admin/categories',

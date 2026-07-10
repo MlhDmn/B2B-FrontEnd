@@ -24,18 +24,6 @@ export class AdminPanel {
       permission: UserPermission.AddProducts
     },
     {
-      title: 'Edit Products',
-      description: 'Update existing product records.',
-      route: '/admin/products/edit',
-      permission: UserPermission.EditProducts
-    },
-    {
-      title: 'Delete Products',
-      description: 'Remove product records from the catalog.',
-      route: '/admin/products/delete',
-      permission: UserPermission.DeleteProducts
-    },
-    {
       title: 'Manage Categories',
       description: 'Organize product categories.',
       route: '/admin/categories',

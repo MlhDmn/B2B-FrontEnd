@@ -1,12 +1,19 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
 import { AuthService, UserPermission } from '../../services/auth.service';
-import { getProductGenderLabel, Product, ProductGender, ProductService } from '../../services/product.service';
+import { Category, CategoryService } from '../../services/category.service';
+import {
+  getProductGenderLabel,
+  Product,
+  ProductGender,
+  ProductService,
+  ProductUpdateRequest
+} from '../../services/product.service';
 
 @Component({
   selector: 'app-landing',
@@ -27,6 +34,12 @@ export class Landing implements OnInit {
   isLoading = signal(true);
   isSidebarOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
+  isEditingProduct = signal(false);
+  isLoadingCategories = signal(false);
+  isSubmittingProduct = signal(false);
+  productEditErrorMessage = signal('');
+  productEditSuccessMessage = signal('');
+  modalCategoryOptions = signal<Category[]>([]);
   searchTerm = signal('');
   filterCategoryId = signal('');
   filterGender = signal('');
@@ -43,8 +56,11 @@ export class Landing implements OnInit {
 
   readonly getProductGenderLabel = getProductGenderLabel;
 
+  productEditForm: ProductUpdateRequest = this.createEmptyProductEditForm();
+
   constructor(
     private readonly productService: ProductService,
+    private readonly categoryService: CategoryService,
     private readonly authService: AuthService,
     private readonly router: Router,
     @Inject(PLATFORM_ID) private readonly platformId: object
@@ -103,10 +119,59 @@ export class Landing implements OnInit {
 
   openProductDetails(product: Product): void {
     this.selectedProduct.set(product);
+    this.resetProductEditState();
   }
 
   closeProductDetails(): void {
     this.selectedProduct.set(null);
+    this.resetProductEditState();
+  }
+
+  startEditingProduct(product: Product): void {
+    this.productEditForm = this.createProductEditForm(product);
+    this.productEditErrorMessage.set('');
+    this.productEditSuccessMessage.set('');
+    this.isEditingProduct.set(true);
+    this.loadModalCategories();
+  }
+
+  cancelEditingProduct(): void {
+    this.resetProductEditState();
+  }
+
+  clearProductEditMessages(): void {
+    this.productEditErrorMessage.set('');
+    this.productEditSuccessMessage.set('');
+  }
+
+  submitProductEdit(editForm: NgForm): void {
+    this.clearProductEditMessages();
+
+    if (editForm.invalid || this.productEditForm.id === 0 || this.productEditForm.categoryId === 0) {
+      editForm.form.markAllAsTouched();
+      this.productEditErrorMessage.set('Please complete the required product details.');
+      return;
+    }
+
+    this.isSubmittingProduct.set(true);
+
+    this.productService.updateProduct(this.productEditForm).pipe(
+      finalize(() => {
+        this.isSubmittingProduct.set(false);
+      })
+    ).subscribe({
+      next: updatedProduct => {
+        this.products.update(products => products.map(product => (
+          product.id === updatedProduct.id ? updatedProduct : product
+        )));
+        this.selectedProduct.set(updatedProduct);
+        this.productEditForm = this.createProductEditForm(updatedProduct);
+        this.productEditSuccessMessage.set('Product updated successfully.');
+      },
+      error: error => {
+        this.productEditErrorMessage.set(getApiErrorMessage(error, 'Product could not be updated.'));
+      }
+    });
   }
 
   updateSearchTerm(value: string): void {
@@ -169,9 +234,8 @@ export class Landing implements OnInit {
     return this.authService.canAccessAdminPanel();
   }
 
-  canEditAndDeleteProducts(): boolean {
-    return this.authService.hasPermission(UserPermission.EditProducts)
-      && this.authService.hasPermission(UserPermission.DeleteProducts);
+  canEditProducts(): boolean {
+    return this.authService.hasPermission(UserPermission.EditProducts);
   }
 
   totalPages(): number {
@@ -225,5 +289,67 @@ export class Landing implements OnInit {
       style: 'currency',
       currency: 'TRY'
     }).format(price);
+  }
+
+  private loadModalCategories(): void {
+    if (this.modalCategoryOptions().length > 0 || this.isLoadingCategories()) {
+      return;
+    }
+
+    this.isLoadingCategories.set(true);
+
+    this.categoryService.getCategories().pipe(
+      finalize(() => {
+        this.isLoadingCategories.set(false);
+      })
+    ).subscribe({
+      next: categories => this.modalCategoryOptions.set(categories),
+      error: error => {
+        this.modalCategoryOptions.set([]);
+        this.productEditErrorMessage.set(getApiErrorMessage(error, 'Categories could not be loaded.'));
+      }
+    });
+  }
+
+  private resetProductEditState(): void {
+    this.isEditingProduct.set(false);
+    this.isSubmittingProduct.set(false);
+    this.productEditErrorMessage.set('');
+    this.productEditSuccessMessage.set('');
+    this.productEditForm = this.createEmptyProductEditForm();
+  }
+
+  private createProductEditForm(product: Product): ProductUpdateRequest {
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      origin: product.origin,
+      sizeRange: product.sizeRange,
+      material: product.material,
+      gender: product.gender,
+      imageUrl: product.imageUrl,
+      stockQuantity: product.stockQuantity,
+      description: product.description,
+      categoryId: product.categoryId,
+      isActive: product.isActive
+    };
+  }
+
+  private createEmptyProductEditForm(): ProductUpdateRequest {
+    return {
+      id: 0,
+      name: '',
+      price: 0,
+      origin: '',
+      sizeRange: '',
+      material: '',
+      gender: ProductGender.Unisex,
+      imageUrl: '',
+      stockQuantity: 0,
+      description: '',
+      categoryId: 0,
+      isActive: true
+    };
   }
 }
