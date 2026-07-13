@@ -26,7 +26,7 @@ export class AddProduct implements OnInit {
     sizeRange: '',
     material: '',
     gender: ProductGender.Unisex,
-    imageUrl: '',
+    image: null,
     stockQuantity: 0,
     description: '',
     categoryId: 0
@@ -65,6 +65,13 @@ export class AddProduct implements OnInit {
     this.errorMessage.set('');
   }
 
+  onImageSelected(event: Event): void {
+    this.clearError();
+
+    const input = event.target as HTMLInputElement;
+    this.form.image = input.files?.[0] ?? null;
+  }
+
   loadCategories(): void {
     this.categoryErrorMessage.set('');
     this.isLoadingCategories.set(true);
@@ -95,7 +102,7 @@ export class AddProduct implements OnInit {
   submit(productForm: NgForm): void {
     this.errorMessage.set('');
 
-    if (productForm.invalid || this.form.categoryId === 0) {
+    if (productForm.invalid || this.form.categoryId === 0 || !this.form.image) {
       productForm.form.markAllAsTouched();
       this.errorMessage.set('Please complete the required product details.');
       return;

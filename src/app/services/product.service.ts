@@ -35,14 +35,24 @@ export interface ProductCreateRequest {
   sizeRange: string;
   material: string;
   gender: ProductGender;
-  imageUrl: string;
+  image: File | null;
   stockQuantity: number;
   description: string;
   categoryId: number;
 }
 
-export interface ProductUpdateRequest extends ProductCreateRequest {
+export interface ProductUpdateRequest {
   id: number;
+  name: string;
+  price: number;
+  origin: string;
+  sizeRange: string;
+  material: string;
+  gender: ProductGender;
+  image: File | null;
+  stockQuantity: number;
+  description: string;
+  categoryId: number;
   isActive: boolean;
 }
 
@@ -67,7 +77,8 @@ export interface ProductListFilters {
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private readonly apiUrl = 'http://localhost:5072/api/Products';
+  private readonly apiOrigin = 'http://localhost:5072';
+  private readonly apiUrl = `${this.apiOrigin}/api/Products`;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -105,26 +116,88 @@ export class ProductService {
     return this.http.get<ApiResponse<PagedProductsResponse>>(
       `${this.apiUrl}?${params.toString()}`
     ).pipe(
-      map(response => unwrapApiResponse(response, 'Products could not be loaded.'))
+      map(response => {
+        const page = unwrapApiResponse(response, 'Products could not be loaded.');
+        return {
+          ...page,
+          items: page.items.map(product => this.normalizeProductImageUrl(product))
+        };
+      })
     );
   }
 
   getProduct(id: number) {
     return this.http.get<ApiResponse<Product>>(`${this.apiUrl}/${id}`).pipe(
-      map(response => unwrapApiResponse(response, 'Product could not be loaded.'))
+      map(response => this.normalizeProductImageUrl(
+        unwrapApiResponse(response, 'Product could not be loaded.')
+      ))
     );
   }
 
   createProduct(request: ProductCreateRequest) {
-    return this.http.post<ApiResponse<Product>>(this.apiUrl, request).pipe(
-      map(response => unwrapApiResponse(response, 'Product could not be created.'))
+    return this.http.post<ApiResponse<Product>>(this.apiUrl, this.toCreateFormData(request)).pipe(
+      map(response => this.normalizeProductImageUrl(
+        unwrapApiResponse(response, 'Product could not be created.')
+      ))
     );
   }
 
   updateProduct(request: ProductUpdateRequest) {
-    return this.http.put<ApiResponse<Product>>(`${this.apiUrl}/${request.id}`, request).pipe(
-      map(response => unwrapApiResponse(response, 'Product could not be updated.'))
+    return this.http.put<ApiResponse<Product>>(`${this.apiUrl}/${request.id}`, this.toUpdateFormData(request)).pipe(
+      map(response => this.normalizeProductImageUrl(
+        unwrapApiResponse(response, 'Product could not be updated.')
+      ))
     );
+  }
+
+  private toCreateFormData(request: ProductCreateRequest): FormData {
+    const formData = this.toProductFormData(request);
+
+    if (request.image) {
+      formData.append('image', request.image);
+    }
+
+    return formData;
+  }
+
+  private toUpdateFormData(request: ProductUpdateRequest): FormData {
+    const formData = this.toProductFormData(request);
+
+    formData.append('id', String(request.id));
+    formData.append('isActive', String(request.isActive));
+
+    if (request.image) {
+      formData.append('image', request.image);
+    }
+
+    return formData;
+  }
+
+  private toProductFormData(request: ProductCreateRequest | ProductUpdateRequest): FormData {
+    const formData = new FormData();
+
+    formData.append('name', request.name);
+    formData.append('price', String(request.price));
+    formData.append('origin', request.origin);
+    formData.append('sizeRange', request.sizeRange);
+    formData.append('material', request.material);
+    formData.append('gender', String(request.gender));
+    formData.append('stockQuantity', String(request.stockQuantity));
+    formData.append('description', request.description);
+    formData.append('categoryId', String(request.categoryId));
+
+    return formData;
+  }
+
+  private normalizeProductImageUrl(product: Product): Product {
+    if (!product.imageUrl || product.imageUrl.startsWith('http')) {
+      return product;
+    }
+
+    return {
+      ...product,
+      imageUrl: `${this.apiOrigin}${product.imageUrl}`
+    };
   }
 }
 

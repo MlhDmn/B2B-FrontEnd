@@ -65,6 +65,13 @@ export class EditProducts implements OnInit {
     this.successMessage.set('');
   }
 
+  onImageSelected(event: Event): void {
+    this.clearMessages();
+
+    const input = event.target as HTMLInputElement;
+    this.form.image = input.files?.[0] ?? null;
+  }
+
   loadProducts(): void {
     this.errorMessage.set('');
     this.isLoadingProducts.set(true);
@@ -164,7 +171,7 @@ export class EditProducts implements OnInit {
       sizeRange: product.sizeRange,
       material: product.material,
       gender: product.gender,
-      imageUrl: product.imageUrl,
+      image: null,
       stockQuantity: product.stockQuantity,
       description: product.description,
       categoryId: product.categoryId,
@@ -217,7 +224,7 @@ export class EditProducts implements OnInit {
       sizeRange: '',
       material: '',
       gender: ProductGender.Unisex,
-      imageUrl: '',
+      image: null,
       stockQuantity: 0,
       description: '',
       categoryId: 0,

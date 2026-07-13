@@ -367,8 +367,8 @@
                 </div>
 
                 <div class="modal-field wide-field">
-                  <label for="modalProductImageUrl">Image URL</label>
-                  <input id="modalProductImageUrl" name="modalProductImageUrl" type="url" [(ngModel)]="productEditForm.imageUrl" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" required />
+                  <label for="modalProductImage">Replace image</label>
+                  <input id="modalProductImage" name="modalProductImage" type="file" accept="image/jpeg,image/png,image/webp" (focus)="clearProductEditMessages()" (change)="onProductEditImageSelected($event)" />
                 </div>
 
                 <div class="modal-field wide-field">

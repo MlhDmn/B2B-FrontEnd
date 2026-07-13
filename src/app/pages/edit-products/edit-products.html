@@ -131,8 +131,8 @@
           </div>
 
           <div class="field-group wide-field">
-            <label for="imageUrl">Image URL</label>
-            <input id="imageUrl" name="imageUrl" type="url" [(ngModel)]="form.imageUrl" (focus)="clearMessages()" (ngModelChange)="clearMessages()" required />
+            <label for="image">Replace image</label>
+            <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" (focus)="clearMessages()" (change)="onImageSelected($event)" />
           </div>
 
           <div class="field-group wide-field">

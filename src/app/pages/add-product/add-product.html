@@ -152,14 +152,14 @@
           </div>
 
           <div class="field-group wide-field">
-            <label for="imageUrl">Image URL</label>
+            <label for="image">Product image</label>
             <input
-              id="imageUrl"
-              name="imageUrl"
-              type="url"
-              [(ngModel)]="form.imageUrl"
+              id="image"
+              name="image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
               (focus)="clearError()"
-              (ngModelChange)="clearError()"
+              (change)="onImageSelected($event)"
               required />
           </div>
 

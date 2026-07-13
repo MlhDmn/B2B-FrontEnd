@@ -146,6 +146,13 @@ export class Landing implements OnInit {
     this.productEditSuccessMessage.set('');
   }
 
+  onProductEditImageSelected(event: Event): void {
+    this.clearProductEditMessages();
+
+    const input = event.target as HTMLInputElement;
+    this.productEditForm.image = input.files?.[0] ?? null;
+  }
+
   submitProductEdit(editForm: NgForm): void {
     this.clearProductEditMessages();
 
@@ -369,7 +376,7 @@ export class Landing implements OnInit {
       sizeRange: product.sizeRange,
       material: product.material,
       gender: product.gender,
-      imageUrl: product.imageUrl,
+      image: null,
       stockQuantity: product.stockQuantity,
       description: product.description,
       categoryId: product.categoryId,
@@ -386,7 +393,7 @@ export class Landing implements OnInit {
       sizeRange: '',
       material: '',
       gender: ProductGender.Unisex,
-      imageUrl: '',
+      image: null,
       stockQuantity: 0,
       description: '',
       categoryId: 0,
