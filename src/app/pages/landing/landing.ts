@@ -45,8 +45,8 @@ export class Landing implements OnInit {
   searchTerm = signal('');
   filterCategoryId = signal('');
   filterGender = signal('');
-  filterMinPrice = signal('');
-  filterMaxPrice = signal('');
+  filterMinPrice = signal<string | number | null>('');
+  filterMaxPrice = signal<string | number | null>('');
   filterInStockOnly = signal(false);
 
   readonly genderOptions = [
@@ -229,11 +229,11 @@ export class Landing implements OnInit {
     this.filterGender.set(value);
   }
 
-  updateFilterMinPrice(value: string): void {
+  updateFilterMinPrice(value: string | number | null): void {
     this.filterMinPrice.set(value);
   }
 
-  updateFilterMaxPrice(value: string): void {
+  updateFilterMaxPrice(value: string | number | null): void {
     this.filterMaxPrice.set(value);
   }
 
@@ -414,8 +414,8 @@ export class Landing implements OnInit {
     return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : undefined;
   }
 
-  private parseNonNegativeNumber(value: string): number | undefined {
-    if (value.trim() === '') {
+  private parseNonNegativeNumber(value: string | number | null): number | undefined {
+    if (value === null || String(value).trim() === '') {
       return undefined;
     }
 
