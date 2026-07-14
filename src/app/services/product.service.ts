@@ -73,7 +73,10 @@ export interface ProductListFilters {
   minPrice?: number;
   maxPrice?: number;
   inStockOnly?: boolean;
+  sortBy?: ProductSortOption;
 }
+
+export type ProductSortOption = 'nameAsc' | 'nameDesc' | 'priceAsc' | 'priceDesc';
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -111,6 +114,10 @@ export class ProductService {
 
     if (filters.inStockOnly) {
       params.set('inStockOnly', 'true');
+    }
+
+    if (filters.sortBy) {
+      params.set('sortBy', filters.sortBy);
     }
 
     return this.http.get<ApiResponse<PagedProductsResponse>>(

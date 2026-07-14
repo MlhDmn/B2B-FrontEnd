@@ -55,6 +55,19 @@
           </div>
 
           <div class="filter-field">
+            <label for="sortBy">Sort by</label>
+            <select
+              id="sortBy"
+              name="sortBy"
+              [ngModel]="sortBy()"
+              (ngModelChange)="updateSortBy($event)">
+              @for (option of sortOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="filter-field">
             <label for="filterCategory">Category</label>
             <select
               id="filterCategory"

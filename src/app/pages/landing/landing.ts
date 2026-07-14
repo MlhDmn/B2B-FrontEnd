@@ -12,6 +12,7 @@ import {
   Product,
   ProductGender,
   ProductListFilters,
+  ProductSortOption,
   ProductService
 } from '../../services/product.service';
 
@@ -44,12 +45,19 @@ export class Landing implements OnInit {
   filterMinPrice = signal<string | number | null>('');
   filterMaxPrice = signal<string | number | null>('');
   filterInStockOnly = signal(false);
+  sortBy = signal<ProductSortOption>('nameAsc');
 
   readonly genderOptions = [
     ProductGender.Unisex,
     ProductGender.Men,
     ProductGender.Women,
     ProductGender.Kids
+  ];
+  readonly sortOptions: Array<{ value: ProductSortOption; label: string }> = [
+    { value: 'nameAsc', label: 'A to Z' },
+    { value: 'nameDesc', label: 'Z to A' },
+    { value: 'priceAsc', label: 'Price: low to high' },
+    { value: 'priceDesc', label: 'Price: high to low' }
   ];
 
   readonly getProductGenderLabel = getProductGenderLabel;
@@ -195,6 +203,11 @@ export class Landing implements OnInit {
     this.filterInStockOnly.set(value);
   }
 
+  updateSortBy(value: ProductSortOption): void {
+    this.sortBy.set(value);
+    this.loadProducts(1);
+  }
+
   applyFilters(): void {
     this.loadProducts(1);
   }
@@ -271,7 +284,8 @@ export class Landing implements OnInit {
 
   private productFilters(): ProductListFilters {
     const filters: ProductListFilters = {
-      searchTerm: this.searchTerm()
+      searchTerm: this.searchTerm(),
+      sortBy: this.sortBy()
     };
 
     const categoryId = this.parsePositiveNumber(this.filterCategoryId());
