@@ -153,7 +153,7 @@
                 (keydown.enter)="openProductDetails(product)"
                 (keydown.space)="openProductDetails(product)">
                 <div class="product-image">
-                  <img [src]="product.imageUrl" [alt]="product.name" />
+                  <img [src]="product.imageUrl" [alt]="product.name" (error)="handleProductImageError($event)" />
                   <span>{{ product.stockQuantity }} in stock</span>
                 </div>
 
@@ -297,7 +297,7 @@
         aria-labelledby="product-modal-title"
         (click)="$event.stopPropagation()">
         <div class="modal-media">
-          <img [src]="product.imageUrl" [alt]="product.name" />
+          <img [src]="product.imageUrl" [alt]="product.name" (error)="handleProductImageError($event)" />
         </div>
 
         <div class="modal-content">

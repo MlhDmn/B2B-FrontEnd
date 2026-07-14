@@ -23,6 +23,7 @@ import {
 })
 export class Landing implements OnInit {
   readonly pageSize = 20;
+  private readonly fallbackProductImageUrl = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 640 420%22%3E%3Crect width=%22640%22 height=%22420%22 fill=%22%23e0f7ff%22/%3E%3Cpath d=%22M130 304l114-126 84 92 54-60 128 94H130z%22 fill=%22%23bae6fd%22/%3E%3Ccircle cx=%22442%22 cy=%22130%22 r=%2238%22 fill=%22%230284c7%22 opacity=%22.45%22/%3E%3Ctext x=%22320%22 y=%22358%22 text-anchor=%22middle%22 font-family=%22Arial,sans-serif%22 font-size=%2228%22 font-weight=%22700%22 fill=%22%2324527a%22%3EImage unavailable%3C/text%3E%3C/svg%3E';
 
   products = signal<Product[]>([]);
   currentPage = signal(1);
@@ -125,6 +126,16 @@ export class Landing implements OnInit {
 
   addProductToCart(product: Product): void {
     this.cartMessage.set(`${product.name} was added to your cart.`);
+  }
+
+  handleProductImageError(event: Event): void {
+    const image = event.target as HTMLImageElement;
+
+    if (image.src === this.fallbackProductImageUrl) {
+      return;
+    }
+
+    image.src = this.fallbackProductImageUrl;
   }
 
   startEditingProduct(product: Product): void {
