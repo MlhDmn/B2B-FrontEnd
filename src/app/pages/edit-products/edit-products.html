@@ -8,11 +8,21 @@
           <h1>Edit products</h1>
         </div>
       </div>
+      <div class="header-actions">
+        <a routerLink="/home" class="secondary-button">Back to products</a>
+        <button
+          type="submit"
+          form="editProductForm"
+          [disabled]="isSubmitting() || form.id === 0 || isLoadingCategories() || isLoadingProducts()"
+          class="primary-button">
+          {{ isSubmitting() ? 'Saving changes...' : 'Save changes' }}
+        </button>
+      </div>
     </div>
   </header>
 
   <section class="product-form-body">
-    <form (ngSubmit)="submit(editForm)" #editForm="ngForm" novalidate class="product-form">
+    <form id="editProductForm" (ngSubmit)="submit(editForm)" #editForm="ngForm" novalidate class="product-form">
       <div class="form-section">
         <div class="section-heading">
           <p class="eyebrow">Selection</p>
@@ -151,7 +161,7 @@
       }
 
       <div class="form-actions">
-        <a routerLink="/home" class="secondary-button">Cancel</a>
+        <a routerLink="/home" class="secondary-button">Back to products</a>
         <button
           type="submit"
           [disabled]="isSubmitting() || form.id === 0 || isLoadingCategories() || isLoadingProducts()"

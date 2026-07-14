@@ -28,6 +28,12 @@
   gap: 14px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .brand-mark {
   display: grid;
   place-items: center;
@@ -236,6 +242,7 @@ h1 {
 
 @media (max-width: 720px) {
   .header-inner,
+  .header-actions,
   .form-actions {
     align-items: stretch;
     flex-direction: column;

@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, OnInit, signal } from '@angular/core';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
@@ -12,8 +12,7 @@ import {
   Product,
   ProductGender,
   ProductListFilters,
-  ProductService,
-  ProductUpdateRequest
+  ProductService
 } from '../../services/product.service';
 
 @Component({
@@ -35,12 +34,8 @@ export class Landing implements OnInit {
   isLoading = signal(true);
   isSidebarOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
-  isEditingProduct = signal(false);
   cartMessage = signal('');
   isLoadingCategories = signal(false);
-  isSubmittingProduct = signal(false);
-  productEditErrorMessage = signal('');
-  productEditSuccessMessage = signal('');
   modalCategoryOptions = signal<Category[]>([]);
   searchTerm = signal('');
   filterCategoryId = signal('');
@@ -57,8 +52,6 @@ export class Landing implements OnInit {
   ];
 
   readonly getProductGenderLabel = getProductGenderLabel;
-
-  productEditForm: ProductUpdateRequest = this.createEmptyProductEditForm();
 
   constructor(
     private readonly productService: ProductService,
@@ -123,13 +116,11 @@ export class Landing implements OnInit {
   openProductDetails(product: Product): void {
     this.selectedProduct.set(product);
     this.cartMessage.set('');
-    this.resetProductEditState();
   }
 
   closeProductDetails(): void {
     this.selectedProduct.set(null);
     this.cartMessage.set('');
-    this.resetProductEditState();
   }
 
   addProductToCart(product: Product): void {
@@ -138,56 +129,8 @@ export class Landing implements OnInit {
 
   startEditingProduct(product: Product): void {
     this.cartMessage.set('');
-    this.productEditForm = this.createProductEditForm(product);
-    this.productEditErrorMessage.set('');
-    this.productEditSuccessMessage.set('');
-    this.isEditingProduct.set(true);
-    this.loadModalCategories();
-  }
-
-  cancelEditingProduct(): void {
-    this.resetProductEditState();
-  }
-
-  clearProductEditMessages(): void {
-    this.productEditErrorMessage.set('');
-    this.productEditSuccessMessage.set('');
-  }
-
-  onProductEditImageSelected(event: Event): void {
-    this.clearProductEditMessages();
-
-    const input = event.target as HTMLInputElement;
-    this.productEditForm.image = input.files?.[0] ?? null;
-  }
-
-  submitProductEdit(editForm: NgForm): void {
-    this.clearProductEditMessages();
-
-    if (editForm.invalid || this.productEditForm.id === 0 || this.productEditForm.categoryId === 0) {
-      editForm.form.markAllAsTouched();
-      this.productEditErrorMessage.set('Please complete the required product details.');
-      return;
-    }
-
-    this.isSubmittingProduct.set(true);
-
-    this.productService.updateProduct(this.productEditForm).pipe(
-      finalize(() => {
-        this.isSubmittingProduct.set(false);
-      })
-    ).subscribe({
-      next: updatedProduct => {
-        this.products.update(products => products.map(product => (
-          product.id === updatedProduct.id ? updatedProduct : product
-        )));
-        this.selectedProduct.set(updatedProduct);
-        this.productEditForm = this.createProductEditForm(updatedProduct);
-        this.productEditSuccessMessage.set('Product updated successfully.');
-      },
-      error: error => {
-        this.productEditErrorMessage.set(getApiErrorMessage(error, 'Product could not be updated.'));
-      }
+    this.router.navigate(['/admin/products/edit'], {
+      queryParams: { productId: product.id }
     });
   }
 
@@ -362,51 +305,9 @@ export class Landing implements OnInit {
       next: categories => this.modalCategoryOptions.set(categories),
       error: error => {
         this.modalCategoryOptions.set([]);
-        this.productEditErrorMessage.set(getApiErrorMessage(error, 'Categories could not be loaded.'));
+        this.errorMessage.set(getApiErrorMessage(error, 'Categories could not be loaded.'));
       }
     });
-  }
-
-  private resetProductEditState(): void {
-    this.isEditingProduct.set(false);
-    this.isSubmittingProduct.set(false);
-    this.productEditErrorMessage.set('');
-    this.productEditSuccessMessage.set('');
-    this.productEditForm = this.createEmptyProductEditForm();
-  }
-
-  private createProductEditForm(product: Product): ProductUpdateRequest {
-    return {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      origin: product.origin,
-      sizeRange: product.sizeRange,
-      material: product.material,
-      gender: product.gender,
-      image: null,
-      stockQuantity: product.stockQuantity,
-      description: product.description,
-      categoryId: product.categoryId,
-      isActive: product.isActive
-    };
-  }
-
-  private createEmptyProductEditForm(): ProductUpdateRequest {
-    return {
-      id: 0,
-      name: '',
-      price: 0,
-      origin: '',
-      sizeRange: '',
-      material: '',
-      gender: ProductGender.Unisex,
-      image: null,
-      stockQuantity: 0,
-      description: '',
-      categoryId: 0,
-      isActive: true
-    };
   }
 
   private parsePositiveNumber(value: string): number | undefined {

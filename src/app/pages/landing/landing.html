@@ -304,162 +304,62 @@
           <div class="modal-header">
             <div>
               <p class="category">{{ product.categoryName }}</p>
-              <h2 id="product-modal-title">{{ isEditingProduct() ? 'Edit product' : product.name }}</h2>
+              <h2 id="product-modal-title">{{ product.name }}</h2>
             </div>
             <button type="button" class="icon-button" aria-label="Close product details" (click)="closeProductDetails()">x</button>
           </div>
 
-          @if (isEditingProduct()) {
-            <form (ngSubmit)="submitProductEdit(productEditFormRef)" #productEditFormRef="ngForm" novalidate class="modal-edit-form">
-              <div class="modal-form-grid">
-                <div class="modal-field wide-field">
-                  <label for="modalProductName">Name</label>
-                  <input id="modalProductName" name="modalProductName" type="text" [(ngModel)]="productEditForm.name" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" maxlength="100" required />
-                </div>
+          <p class="modal-price">{{ formatPrice(product.price) }}</p>
+          <p class="modal-description">{{ product.description }}</p>
 
-                <div class="modal-field">
-                  <label for="modalProductPrice">Price</label>
-                  <input id="modalProductPrice" name="modalProductPrice" type="number" [(ngModel)]="productEditForm.price" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" min="0.01" step="0.01" required />
-                </div>
+          <div class="modal-actions">
+            <button
+              type="button"
+              class="modal-cart-button"
+              (click)="addProductToCart(product)">
+              Add to cart
+            </button>
 
-                <div class="modal-field">
-                  <label for="modalProductStock">Stock</label>
-                  <input id="modalProductStock" name="modalProductStock" type="number" [(ngModel)]="productEditForm.stockQuantity" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" min="0" step="1" required />
-                </div>
-
-                <div class="modal-field">
-                  <label for="modalProductCategory">Category</label>
-                  <select
-                    id="modalProductCategory"
-                    name="modalProductCategory"
-                    [(ngModel)]="productEditForm.categoryId"
-                    (focus)="clearProductEditMessages()"
-                    (ngModelChange)="clearProductEditMessages()"
-                    [disabled]="isLoadingCategories() || modalCategoryOptions().length === 0"
-                    required>
-                    @if (isLoadingCategories()) {
-                      <option [ngValue]="0">Loading categories...</option>
-                    } @else if (modalCategoryOptions().length === 0) {
-                      <option [ngValue]="0">No categories found</option>
-                    } @else {
-                      @for (category of modalCategoryOptions(); track category.id) {
-                        <option [ngValue]="category.id">{{ category.name }}</option>
-                      }
-                    }
-                  </select>
-                </div>
-
-                <div class="modal-field">
-                  <label for="modalProductGender">Gender</label>
-                  <select id="modalProductGender" name="modalProductGender" [(ngModel)]="productEditForm.gender" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" required>
-                    @for (gender of genderOptions; track gender) {
-                      <option [ngValue]="gender">{{ getProductGenderLabel(gender) }}</option>
-                    }
-                  </select>
-                </div>
-
-                <div class="modal-field">
-                  <label for="modalProductOrigin">Origin</label>
-                  <input id="modalProductOrigin" name="modalProductOrigin" type="text" [(ngModel)]="productEditForm.origin" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" maxlength="50" required />
-                </div>
-
-                <div class="modal-field">
-                  <label for="modalProductSizeRange">Size range</label>
-                  <input id="modalProductSizeRange" name="modalProductSizeRange" type="text" [(ngModel)]="productEditForm.sizeRange" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" maxlength="50" required />
-                </div>
-
-                <div class="modal-field">
-                  <label for="modalProductMaterial">Material</label>
-                  <input id="modalProductMaterial" name="modalProductMaterial" type="text" [(ngModel)]="productEditForm.material" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" maxlength="50" required />
-                </div>
-
-                <div class="modal-field wide-field">
-                  <label for="modalProductImage">Replace image</label>
-                  <input id="modalProductImage" name="modalProductImage" type="file" accept="image/jpeg,image/png,image/webp" (focus)="clearProductEditMessages()" (change)="onProductEditImageSelected($event)" />
-                </div>
-
-                <div class="modal-field wide-field">
-                  <label for="modalProductDescription">Description</label>
-                  <textarea id="modalProductDescription" name="modalProductDescription" [(ngModel)]="productEditForm.description" (focus)="clearProductEditMessages()" (ngModelChange)="clearProductEditMessages()" rows="4" required></textarea>
-                </div>
-
-                <label class="modal-check-row wide-field">
-                  <input id="modalProductIsActive" name="modalProductIsActive" type="checkbox" [(ngModel)]="productEditForm.isActive" (ngModelChange)="clearProductEditMessages()" />
-                  <span>Product is active</span>
-                </label>
-              </div>
-
-              @if (productEditErrorMessage()) {
-                <p role="alert" class="modal-form-error">{{ productEditErrorMessage() }}</p>
-              }
-
-              @if (productEditSuccessMessage()) {
-                <p role="status" class="modal-form-success">{{ productEditSuccessMessage() }}</p>
-              }
-
-              <div class="modal-actions">
-                <button type="button" class="modal-secondary-button" (click)="cancelEditingProduct()">Cancel</button>
-                <button
-                  type="submit"
-                  class="modal-edit-button"
-                  [disabled]="isSubmittingProduct() || isLoadingCategories() || productEditForm.id === 0">
-                  {{ isSubmittingProduct() ? 'Saving changes...' : 'Save changes' }}
-                </button>
-              </div>
-            </form>
-          } @else {
-            <p class="modal-price">{{ formatPrice(product.price) }}</p>
-            <p class="modal-description">{{ product.description }}</p>
-
-            <div class="modal-actions">
+            @if (canEditProducts()) {
               <button
                 type="button"
-                class="modal-cart-button"
-                (click)="addProductToCart(product)">
-                Add to cart
+                class="modal-edit-button"
+                (click)="startEditingProduct(product)">
+                Edit product
               </button>
-
-              @if (canEditProducts()) {
-                <button
-                  type="button"
-                  class="modal-edit-button"
-                  (click)="startEditingProduct(product)">
-                  Edit product
-                </button>
-              }
-            </div>
-
-            @if (cartMessage()) {
-              <p role="status" class="modal-cart-message">{{ cartMessage() }}</p>
             }
+          </div>
 
-            <dl class="modal-details">
-              <div>
-                <dt>Stock</dt>
-                <dd>{{ product.stockQuantity }}</dd>
-              </div>
-              <div>
-                <dt>Gender</dt>
-                <dd>{{ getProductGenderLabel(product.gender) }}</dd>
-              </div>
-              <div>
-                <dt>Origin</dt>
-                <dd>{{ product.origin }}</dd>
-              </div>
-              <div>
-                <dt>Material</dt>
-                <dd>{{ product.material }}</dd>
-              </div>
-              <div>
-                <dt>Sizes</dt>
-                <dd>{{ product.sizeRange }}</dd>
-              </div>
-              <div class="wide-detail">
-                <dt>About this category</dt>
-                <dd>{{ product.categoryDescription }}</dd>
-              </div>
-            </dl>
+          @if (cartMessage()) {
+            <p role="status" class="modal-cart-message">{{ cartMessage() }}</p>
           }
+
+          <dl class="modal-details">
+            <div>
+              <dt>Stock</dt>
+              <dd>{{ product.stockQuantity }}</dd>
+            </div>
+            <div>
+              <dt>Gender</dt>
+              <dd>{{ getProductGenderLabel(product.gender) }}</dd>
+            </div>
+            <div>
+              <dt>Origin</dt>
+              <dd>{{ product.origin }}</dd>
+            </div>
+            <div>
+              <dt>Material</dt>
+              <dd>{{ product.material }}</dd>
+            </div>
+            <div>
+              <dt>Sizes</dt>
+              <dd>{{ product.sizeRange }}</dd>
+            </div>
+            <div class="wide-detail">
+              <dt>About this category</dt>
+              <dd>{{ product.categoryDescription }}</dd>
+            </div>
+          </dl>
         </div>
       </section>
     </div>
