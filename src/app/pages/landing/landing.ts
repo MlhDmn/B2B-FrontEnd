@@ -36,6 +36,7 @@ export class Landing implements OnInit {
   isSidebarOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
   isEditingProduct = signal(false);
+  cartMessage = signal('');
   isLoadingCategories = signal(false);
   isSubmittingProduct = signal(false);
   productEditErrorMessage = signal('');
@@ -121,15 +122,22 @@ export class Landing implements OnInit {
 
   openProductDetails(product: Product): void {
     this.selectedProduct.set(product);
+    this.cartMessage.set('');
     this.resetProductEditState();
   }
 
   closeProductDetails(): void {
     this.selectedProduct.set(null);
+    this.cartMessage.set('');
     this.resetProductEditState();
   }
 
+  addProductToCart(product: Product): void {
+    this.cartMessage.set(`${product.name} was added to your cart.`);
+  }
+
   startEditingProduct(product: Product): void {
+    this.cartMessage.set('');
     this.productEditForm = this.createProductEditForm(product);
     this.productEditErrorMessage.set('');
     this.productEditSuccessMessage.set('');

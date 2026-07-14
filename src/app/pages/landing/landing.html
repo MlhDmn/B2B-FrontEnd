@@ -10,6 +10,9 @@
       </div>
 
       <div class="header-actions">
+        <a routerLink="/cart" class="cart-nav-button" aria-label="Go to shopping cart">
+          Shopping Cart
+        </a>
         <button type="button" (click)="logout()" class="secondary-button">Log out</button>
         <button
           type="button"
@@ -260,6 +263,10 @@
         <span>Products</span>
         <small>{{ totalCount() }} items</small>
       </a>
+      <a routerLink="/cart" class="nav-item" (click)="closeSidebar()">
+        <span>Shopping Cart</span>
+        <small>View cart</small>
+      </a>
       @if (canAccessAdminPanel()) {
         <a routerLink="/admin" class="nav-item" (click)="closeSidebar()">
           <span>Admin Panel</span>
@@ -404,13 +411,26 @@
             <p class="modal-price">{{ formatPrice(product.price) }}</p>
             <p class="modal-description">{{ product.description }}</p>
 
-            @if (canEditProducts()) {
+            <div class="modal-actions">
               <button
                 type="button"
-                class="modal-edit-button"
-                (click)="startEditingProduct(product)">
-                Edit product
+                class="modal-cart-button"
+                (click)="addProductToCart(product)">
+                Add to cart
               </button>
+
+              @if (canEditProducts()) {
+                <button
+                  type="button"
+                  class="modal-edit-button"
+                  (click)="startEditingProduct(product)">
+                  Edit product
+                </button>
+              }
+            </div>
+
+            @if (cartMessage()) {
+              <p role="status" class="modal-cart-message">{{ cartMessage() }}</p>
             }
 
             <dl class="modal-details">

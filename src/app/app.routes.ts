@@ -8,6 +8,7 @@ import { authGuard } from './core/auth.guard';
 import { Unauthorized } from './pages/unauthorized/unauthorized';
 import { AdminPanel } from './pages/admin-panel/admin-panel';
 import { AdminFeature } from './pages/admin-feature/admin-feature';
+import { ShoppingCart } from './pages/shopping-cart/shopping-cart';
 import { permissionGuard } from './core/permission.guard';
 import { UserPermission } from './services/auth.service';
 
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'signup', component: Signup },
   { path: 'unauthorized', component: Unauthorized },
   { path: 'home', component: Landing, canActivate: [authGuard] },
+  { path: 'cart', component: ShoppingCart, canActivate: [authGuard] },
   {
     path: 'admin',
     component: AdminPanel,
