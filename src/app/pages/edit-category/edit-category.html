@@ -1,0 +1,107 @@
+<main class="category-form-shell">
+  <header class="category-form-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+        <div>
+          <p class="eyebrow">Catalog tools</p>
+          <h1>Edit category</h1>
+        </div>
+      </div>
+
+      <a routerLink="/admin/categories" class="secondary-button">Back to categories</a>
+    </div>
+  </header>
+
+  <section class="category-form-body">
+    <form (ngSubmit)="submit(categoryForm)" #categoryForm="ngForm" novalidate class="category-form">
+      <section class="form-section" aria-labelledby="category-selection-title">
+        <div class="section-heading">
+          <p class="eyebrow">Selection</p>
+          <h2 id="category-selection-title">Choose category</h2>
+        </div>
+
+        <div class="field-group">
+          <label for="selectedCategory">Category</label>
+          <select
+            id="selectedCategory"
+            name="selectedCategory"
+            [ngModel]="selectedCategoryId()"
+            (ngModelChange)="selectCategory($event)"
+            [disabled]="isLoadingCategories() || categories().length === 0">
+            @if (isLoadingCategories()) {
+              <option [ngValue]="0">Loading categories...</option>
+            } @else if (categories().length === 0) {
+              <option [ngValue]="0">No categories found</option>
+            } @else {
+              @for (category of categories(); track category.id) {
+                <option [ngValue]="category.id">{{ category.name }}</option>
+              }
+            }
+          </select>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="category-details-title">
+        <div class="section-heading">
+          <p class="eyebrow">Category details</p>
+          <h2 id="category-details-title">Update category</h2>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group wide-field">
+            <label for="name">Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              [(ngModel)]="form.name"
+              (focus)="clearMessages()"
+              (ngModelChange)="clearMessages()"
+              [disabled]="selectedCategoryId() === 0"
+              maxlength="100"
+              required />
+          </div>
+
+          <div class="field-group wide-field">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              [(ngModel)]="form.description"
+              (focus)="clearMessages()"
+              (ngModelChange)="clearMessages()"
+              [disabled]="selectedCategoryId() === 0"
+              maxlength="500"
+              rows="5"></textarea>
+          </div>
+        </div>
+      </section>
+
+      @if (errorMessage()) {
+        <p role="alert" class="form-error">{{ errorMessage() }}</p>
+      }
+
+      @if (successMessage()) {
+        <p role="status" class="form-success">{{ successMessage() }}</p>
+      }
+
+      <div class="form-actions">
+        <a routerLink="/admin/categories" class="secondary-button">Cancel</a>
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="loadCategories()"
+          [disabled]="isLoadingCategories() || isSubmitting()">
+          Reload categories
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting() || isLoadingCategories() || selectedCategoryId() === 0"
+          class="primary-button">
+          {{ isSubmitting() ? 'Saving changes...' : 'Save changes' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

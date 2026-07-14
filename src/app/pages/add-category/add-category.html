@@ -1,0 +1,68 @@
+<main class="category-form-shell">
+  <header class="category-form-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+        <div>
+          <p class="eyebrow">Catalog tools</p>
+          <h1>Add category</h1>
+        </div>
+      </div>
+
+      <a routerLink="/admin/categories" class="secondary-button">Back to categories</a>
+    </div>
+  </header>
+
+  <section class="category-form-body">
+    <form (ngSubmit)="submit(categoryForm)" #categoryForm="ngForm" novalidate class="category-form">
+      <section class="form-section" aria-labelledby="category-details-title">
+        <div class="section-heading">
+          <p class="eyebrow">Category details</p>
+          <h2 id="category-details-title">Create a category</h2>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group wide-field">
+            <label for="name">Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              [(ngModel)]="form.name"
+              (focus)="clearMessages()"
+              (ngModelChange)="clearMessages()"
+              maxlength="100"
+              required />
+          </div>
+
+          <div class="field-group wide-field">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              [(ngModel)]="form.description"
+              (focus)="clearMessages()"
+              (ngModelChange)="clearMessages()"
+              maxlength="500"
+              rows="5"></textarea>
+          </div>
+        </div>
+      </section>
+
+      @if (errorMessage()) {
+        <p role="alert" class="form-error">{{ errorMessage() }}</p>
+      }
+
+      @if (successMessage()) {
+        <p role="status" class="form-success">{{ successMessage() }}</p>
+      }
+
+      <div class="form-actions">
+        <a routerLink="/admin/categories" class="secondary-button">Cancel</a>
+        <button type="submit" [disabled]="isSubmitting()" class="primary-button">
+          {{ isSubmitting() ? 'Adding category...' : 'Add category' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</main>

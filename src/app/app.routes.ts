@@ -3,6 +3,8 @@ import { Login } from './pages/login/login';
 import { Signup } from './pages/signup/signup';
 import { Landing } from './pages/landing/landing';
 import { AddProduct } from './pages/add-product/add-product';
+import { AddCategory } from './pages/add-category/add-category';
+import { EditCategory } from './pages/edit-category/edit-category';
 import { EditProducts } from './pages/edit-products/edit-products';
 import { authGuard } from './core/auth.guard';
 import { Unauthorized } from './pages/unauthorized/unauthorized';
@@ -41,6 +43,18 @@ export const routes: Routes = [
   {
     path: 'admin/categories',
     component: ManageCategories,
+    canActivate: [authGuard, permissionGuard],
+    data: { permission: UserPermission.ManageCategories }
+  },
+  {
+    path: 'admin/categories/add',
+    component: AddCategory,
+    canActivate: [authGuard, permissionGuard],
+    data: { permission: UserPermission.ManageCategories }
+  },
+  {
+    path: 'admin/categories/edit',
+    component: EditCategory,
     canActivate: [authGuard, permissionGuard],
     data: { permission: UserPermission.ManageCategories }
   },

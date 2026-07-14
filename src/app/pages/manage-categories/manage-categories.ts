@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 interface CategoryAction {
   title: string;
   description: string;
+  route?: string;
 }
 
 @Component({
@@ -16,11 +17,13 @@ export class ManageCategories {
   readonly actions: CategoryAction[] = [
     {
       title: 'Add Category',
-      description: 'Create a new category for catalog products.'
+      description: 'Create a new category for catalog products.',
+      route: '/admin/categories/add'
     },
     {
       title: 'Edit Category',
-      description: 'Update names and descriptions for existing categories.'
+      description: 'Update names and descriptions for existing categories.',
+      route: '/admin/categories/edit'
     }
   ];
 }
