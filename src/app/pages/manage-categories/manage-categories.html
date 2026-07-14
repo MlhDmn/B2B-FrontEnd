@@ -1,0 +1,32 @@
+<main class="admin-shell">
+  <header class="admin-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+        <div>
+          <p class="eyebrow">Catalog tools</p>
+          <h1>Manage Categories</h1>
+        </div>
+      </div>
+
+      <a routerLink="/admin" class="secondary-button">Back to admin panel</a>
+    </div>
+  </header>
+
+  <section class="admin-body">
+    <section class="intro-panel" aria-labelledby="categories-title">
+      <p class="eyebrow">Category actions</p>
+      <h2 id="categories-title">Choose what you want to manage</h2>
+      <p>Create new product categories or update the categories already used in the catalog.</p>
+    </section>
+
+    <div class="action-grid">
+      @for (action of actions; track action.title) {
+        <button type="button" class="action-card">
+          <span>{{ action.title }}</span>
+          <small>{{ action.description }}</small>
+        </button>
+      }
+    </div>
+  </section>
+</main>

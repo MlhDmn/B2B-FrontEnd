@@ -1,0 +1,106 @@
+<main class="admin-shell">
+  <header class="admin-header">
+    <div class="header-inner">
+      <div class="brand-row">
+        <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+        <div>
+          <p class="eyebrow">Access tools</p>
+          <h1>Manage Users</h1>
+        </div>
+      </div>
+
+      <a routerLink="/admin" class="secondary-button">Back to admin panel</a>
+    </div>
+  </header>
+
+  <section class="admin-body">
+    <section class="intro-panel" aria-labelledby="users-title">
+      <p class="eyebrow">User editor</p>
+      <h2 id="users-title">Find a user by ID</h2>
+      <p>Enter a user ID, review the account information, and update the editable fields.</p>
+    </section>
+
+    <form class="user-form" (submit)="$event.preventDefault(); saveUser()" novalidate>
+      <section class="form-section" aria-labelledby="lookup-title">
+        <div class="section-heading">
+          <p class="eyebrow">Lookup</p>
+          <h3 id="lookup-title">User ID</h3>
+        </div>
+
+        <div class="lookup-row">
+          <label for="userId">User ID</label>
+          <input
+            id="userId"
+            name="userId"
+            type="number"
+            min="1"
+            [value]="form().userId"
+            (input)="updateField('userId', $any($event.target).value)"
+            placeholder="Enter user ID" />
+          <button type="button" class="primary-button" (click)="loadUser()" [disabled]="!canLoadUser()">
+            {{ isLoadingUser() ? 'Loading user...' : 'Load user' }}
+          </button>
+        </div>
+      </section>
+
+      <section class="form-section" aria-labelledby="details-title">
+        <div class="section-heading">
+          <p class="eyebrow">Details</p>
+          <h3 id="details-title">Edit user information</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-group">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" [value]="form().firstName" (input)="updateField('firstName', $any($event.target).value)" />
+          </div>
+
+          <div class="field-group">
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" [value]="form().lastName" (input)="updateField('lastName', $any($event.target).value)" />
+          </div>
+
+          <div class="field-group wide-field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" [value]="form().email" (input)="updateField('email', $any($event.target).value)" />
+          </div>
+
+          <fieldset class="permissions-field wide-field">
+            <legend>Permissions</legend>
+            <div class="permission-grid">
+              @for (permission of permissionOptions; track permission.value) {
+                <label class="check-row">
+                  <input
+                    type="checkbox"
+                    [name]="'permission-' + permission.value"
+                    [checked]="hasPermission(permission.value)"
+                    (change)="togglePermission(permission.value, $any($event.target).checked)" />
+                  <span>{{ permission.label }}</span>
+                </label>
+              }
+            </div>
+          </fieldset>
+
+          <label class="check-row">
+            <input id="isActive" name="isActive" type="checkbox" [checked]="form().isActive" (change)="updateField('isActive', $any($event.target).checked)" />
+            <span>Account is active</span>
+          </label>
+        </div>
+
+        @if (errorMessage()) {
+          <p role="alert" class="error-message">{{ errorMessage() }}</p>
+        }
+
+        @if (statusMessage()) {
+          <p role="status" class="status-message">{{ statusMessage() }}</p>
+        }
+
+        <div class="form-actions">
+          <button type="submit" class="primary-button" [disabled]="isSavingUser()">
+            {{ isSavingUser() ? 'Saving changes...' : 'Save changes' }}
+          </button>
+        </div>
+      </section>
+    </form>
+  </section>
+</main>

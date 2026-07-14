@@ -9,6 +9,8 @@ import { Unauthorized } from './pages/unauthorized/unauthorized';
 import { AdminPanel } from './pages/admin-panel/admin-panel';
 import { AdminFeature } from './pages/admin-feature/admin-feature';
 import { ShoppingCart } from './pages/shopping-cart/shopping-cart';
+import { ManageCategories } from './pages/manage-categories/manage-categories';
+import { ManageUsers } from './pages/manage-users/manage-users';
 import { permissionGuard } from './core/permission.guard';
 import { UserPermission } from './services/auth.service';
 
@@ -38,25 +40,15 @@ export const routes: Routes = [
   },
   {
     path: 'admin/categories',
-    component: AdminFeature,
+    component: ManageCategories,
     canActivate: [authGuard, permissionGuard],
-    data: {
-      permission: UserPermission.ManageCategories,
-      eyebrow: 'Catalog tools',
-      title: 'Manage Categories',
-      description: 'Create, edit, and organize catalog categories.'
-    }
+    data: { permission: UserPermission.ManageCategories }
   },
   {
     path: 'admin/users',
-    component: AdminFeature,
+    component: ManageUsers,
     canActivate: [authGuard, permissionGuard],
-    data: {
-      permission: UserPermission.ManageUsers,
-      eyebrow: 'Access tools',
-      title: 'Manage Users',
-      description: 'Review users and adjust account permissions.'
-    }
+    data: { permission: UserPermission.ManageUsers }
   },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' }
