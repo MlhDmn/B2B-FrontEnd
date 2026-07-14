@@ -38,6 +38,7 @@ export class EditProducts implements OnInit {
   isSubmitting = signal(false);
   errorMessage = signal('');
   successMessage = signal('');
+  imageFileName = signal('');
 
   form: ProductUpdateRequest = this.createEmptyForm();
   private readonly requestedProductId: number;
@@ -70,6 +71,7 @@ export class EditProducts implements OnInit {
 
     const input = event.target as HTMLInputElement;
     this.form.image = input.files?.[0] ?? null;
+    this.imageFileName.set(this.form.image?.name ?? '');
   }
 
   loadProducts(): void {
@@ -160,6 +162,7 @@ export class EditProducts implements OnInit {
     if (!product) {
       this.selectedProduct.set(null);
       this.form = this.createEmptyForm();
+      this.imageFileName.set('');
       return;
     }
 
@@ -177,6 +180,7 @@ export class EditProducts implements OnInit {
       categoryId: product.categoryId,
       isActive: product.isActive
     };
+    this.imageFileName.set('');
     this.selectedProduct.set(product);
   }
 

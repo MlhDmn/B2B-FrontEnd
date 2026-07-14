@@ -142,6 +142,55 @@ h1 {
   box-shadow: 0 0 0 3px rgb(2 132 199 / 16%);
 }
 
+.file-picker {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.field-group .file-input {
+  position: absolute;
+  width: 1px;
+  min-height: 0;
+  height: 1px;
+  border: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: none;
+}
+
+.file-button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #0284c7;
+  border-radius: 6px;
+  background: #0284c7;
+  color: #fff;
+  cursor: pointer;
+  padding: 0 16px;
+  font-weight: 800;
+  box-shadow: 0 12px 24px rgb(2 132 199 / 18%);
+}
+
+.file-button:hover {
+  background: #0369a1;
+}
+
+.file-input:focus-visible + .file-button {
+  box-shadow: 0 0 0 3px rgb(2 132 199 / 18%);
+}
+
+.file-name {
+  color: #42617d;
+  font-size: 0.9rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
 .form-error {
   border: 1px solid #fda4af;
   border-radius: 6px;

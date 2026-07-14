@@ -45,6 +45,7 @@ export class AddProduct implements OnInit {
   isLoadingCategories = signal(true);
   errorMessage = signal('');
   isSubmitting = signal(false);
+  imageFileName = signal('');
 
   constructor(
     private readonly productService: ProductService,
@@ -70,6 +71,7 @@ export class AddProduct implements OnInit {
 
     const input = event.target as HTMLInputElement;
     this.form.image = input.files?.[0] ?? null;
+    this.imageFileName.set(this.form.image?.name ?? '');
   }
 
   loadCategories(): void {

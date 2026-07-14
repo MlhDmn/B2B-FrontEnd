@@ -153,14 +153,21 @@
 
           <div class="field-group wide-field">
             <label for="image">Product image</label>
-            <input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              (focus)="clearError()"
-              (change)="onImageSelected($event)"
-              required />
+            <div class="file-picker">
+              <input
+                id="image"
+                name="image"
+                type="file"
+                class="file-input"
+                accept="image/jpeg,image/png,image/webp"
+                (focus)="clearError()"
+                (change)="onImageSelected($event)"
+                required />
+              <label for="image" class="file-button">Dosya seç</label>
+              @if (imageFileName()) {
+                <span class="file-name">{{ imageFileName() }}</span>
+              }
+            </div>
           </div>
 
           <div class="field-group wide-field">
