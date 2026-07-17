@@ -17,11 +17,84 @@
   </header>
 
   <section class="cart-body">
-    <section class="cart-panel" aria-labelledby="cart-title">
-      <p class="eyebrow">Cart</p>
-      <h2 id="cart-title">Your shopping cart</h2>
-      <p>Your cart is empty right now. Products added to the cart will show up here.</p>
-      <a routerLink="/home" class="primary-button">Browse products</a>
-    </section>
+    @if (isLoading()) {
+      <section class="cart-panel" aria-live="polite">
+        <p class="eyebrow">Cart</p>
+        <h2>Loading cart</h2>
+        <p>Your saved cart is being loaded.</p>
+      </section>
+    } @else if (errorMessage()) {
+      <section class="cart-panel">
+        <p class="eyebrow">Cart</p>
+        <h2>Cart unavailable</h2>
+        <p role="alert" class="cart-error">{{ errorMessage() }}</p>
+        <button type="button" class="primary-button" (click)="loadCart()">Try again</button>
+      </section>
+    } @else if (cartItems().length === 0) {
+      <section class="cart-panel empty-cart-panel" aria-labelledby="cart-title">
+        <p class="eyebrow">Cart</p>
+        <h2 id="cart-title">Your shopping cart</h2>
+        <p>Your cart is empty right now. Products added to the cart will show up here.</p>
+        <a routerLink="/home" class="primary-button">Browse products</a>
+      </section>
+    } @else {
+      <section class="cart-layout" aria-label="Shopping cart contents">
+        <div class="cart-items">
+          @for (item of cartItems(); track item.productId) {
+            <article class="cart-item">
+              <img [src]="item.imageUrl" [alt]="item.name" (error)="handleProductImageError($event)" />
+
+              <div class="item-details">
+                <h2>{{ item.name }}</h2>
+                <p>{{ formatPrice(item.price) }} each</p>
+                <small>{{ item.stockQuantity }} in stock</small>
+              </div>
+
+              <div class="quantity-control" aria-label="Quantity">
+                <button type="button" (click)="decreaseQuantity(item)" aria-label="Decrease quantity">-</button>
+                <input
+                  type="number"
+                  min="1"
+                  [max]="item.stockQuantity"
+                  [value]="item.quantity"
+                  (change)="updateQuantity(item, $any($event.target).value)"
+                  aria-label="Item quantity" />
+                <button type="button" (click)="increaseQuantity(item)" [disabled]="item.quantity >= item.stockQuantity" aria-label="Increase quantity">+</button>
+              </div>
+
+              <div class="item-total">
+                <strong>{{ formatPrice(item.price * item.quantity) }}</strong>
+                <button type="button" class="remove-button" (click)="removeItem(item)">Remove</button>
+              </div>
+            </article>
+          }
+        </div>
+
+        <aside class="cart-summary" aria-labelledby="summary-title">
+          <p class="eyebrow">Summary</p>
+          <h2 id="summary-title">Order total</h2>
+          <div class="summary-row">
+            <span>Items</span>
+            <strong>{{ totalItems() }}</strong>
+          </div>
+          <div class="summary-row total-row">
+            <span>Subtotal</span>
+            <strong>{{ formatPrice(subtotal()) }}</strong>
+          </div>
+          @if (errorMessage()) {
+            <p role="alert" class="cart-error">{{ errorMessage() }}</p>
+          }
+          <button
+            type="button"
+            class="primary-button checkout-button"
+            (click)="finishShopping()"
+            [disabled]="isCheckingOut()">
+            {{ isCheckingOut() ? 'Checking products...' : 'Finish shopping' }}
+          </button>
+          <a routerLink="/home" class="secondary-button">Continue shopping</a>
+          <button type="button" class="secondary-button" (click)="clearCart()">Clear cart</button>
+        </aside>
+      </section>
+    }
   </section>
 </main>

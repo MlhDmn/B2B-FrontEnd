@@ -12,6 +12,9 @@
       <div class="header-actions">
         <a routerLink="/cart" class="cart-nav-button" aria-label="Go to shopping cart">
           Shopping Cart
+          @if (cartItemCount() > 0) {
+            <span>{{ cartItemCount() }}</span>
+          }
         </a>
         <button type="button" (click)="logout()" class="secondary-button">Log out</button>
         <button
@@ -278,7 +281,7 @@
       </a>
       <a routerLink="/cart" class="nav-item" (click)="closeSidebar()">
         <span>Shopping Cart</span>
-        <small>View cart</small>
+        <small>{{ cartItemCount() }} items</small>
       </a>
       @if (canAccessAdminPanel()) {
         <a routerLink="/admin" class="nav-item" (click)="closeSidebar()">
@@ -286,11 +289,11 @@
           <small>Manage permitted tools</small>
         </a>
       }
-      <a href="" class="nav-item" (click)="$event.preventDefault()">
+      <a href="" class="nav-item temporarily-hidden" (click)="$event.preventDefault()">
         <span>Wish List</span>
         <small>Saved products</small>
       </a>
-      <a href="" class="nav-item" (click)="$event.preventDefault()">
+      <a href="" class="nav-item temporarily-hidden" (click)="$event.preventDefault()">
         <span>Profile</span>
         <small>Account settings</small>
       </a>
@@ -329,8 +332,9 @@
             <button
               type="button"
               class="modal-cart-button"
+              [disabled]="product.stockQuantity <= 0"
               (click)="addProductToCart(product)">
-              Add to cart
+              {{ product.stockQuantity > 0 ? 'Add to cart' : 'Out of stock' }}
             </button>
 
             @if (canEditProducts()) {

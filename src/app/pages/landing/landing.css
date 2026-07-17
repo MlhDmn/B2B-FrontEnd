@@ -82,6 +82,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   border: 1px solid #0284c7;
   border-radius: 6px;
   background: #0284c7;
@@ -93,8 +94,24 @@ h1 {
   white-space: nowrap;
 }
 
+.cart-nav-button span {
+  min-width: 22px;
+  min-height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #0369a1;
+  padding: 0 7px;
+  font-size: 0.78rem;
+}
+
 .cart-nav-button:hover {
   background: #0369a1;
+}
+
+.temporarily-hidden {
+  display: none !important;
 }
 
 .secondary-button:hover {
@@ -480,7 +497,7 @@ h1 {
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -780,6 +797,12 @@ h1 {
   background: #115e59;
 }
 
+.modal-cart-button:disabled {
+  border-color: #94a3b8;
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
 .modal-cart-message {
   border: 1px solid #86efac;
   border-radius: 6px;
@@ -826,6 +849,12 @@ h1 {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1180px) {
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

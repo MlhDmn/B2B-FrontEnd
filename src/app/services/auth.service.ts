@@ -41,6 +41,7 @@ export enum UserPermission {
 }
 
 interface JwtPayload {
+  exp?: number;
   permissions?: string | number;
   [key: string]: unknown;
 }
@@ -74,9 +75,18 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return isPlatformBrowser(this.platformId)
-      ? localStorage.getItem(this.tokenKey)
-      : null;
+    if (!isPlatformBrowser(this.platformId)) {
+      return null;
+    }
+
+    const token = localStorage.getItem(this.tokenKey);
+
+    if (token && this.isTokenExpired(token)) {
+      this.logout();
+      return null;
+    }
+
+    return token;
   }
 
   isLoggedIn(): boolean {
@@ -137,5 +147,15 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  private isTokenExpired(token: string): boolean {
+    const payload = this.decodeTokenPayload(token);
+
+    if (typeof payload?.exp !== 'number') {
+      return false;
+    }
+
+    return payload.exp * 1000 <= Date.now();
   }
 }

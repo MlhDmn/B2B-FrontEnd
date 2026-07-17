@@ -1,0 +1,20 @@
+<main class="failure-shell">
+  <section class="failure-panel" aria-labelledby="failure-title">
+    <a routerLink="/home" class="brand-mark" aria-label="B2B catalog home">B2B</a>
+
+    <p class="eyebrow">Checkout not completed</p>
+    <h1 id="failure-title">Your order could not continue.</h1>
+    <p class="message">Please review the following product issue(s):</p>
+
+    <ul class="reason-list">
+      @for (reason of reasons; track reason) {
+        <li>{{ reason }}</li>
+      }
+    </ul>
+
+    <div class="failure-actions">
+      <a routerLink="/cart" class="primary-button">Return to cart</a>
+      <a routerLink="/home" class="secondary-button">Back to products</a>
+    </div>
+  </section>
+</main>

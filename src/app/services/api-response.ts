@@ -18,11 +18,27 @@ export function unwrapApiResponse<T>(response: ApiResponse<T>, fallback: string)
 
 export function getApiErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof HttpErrorResponse) {
-    return getErrorPayloadMessage(error.error, fallback);
+    return getErrorPayloadMessage(error.error, getHttpFallbackMessage(error, fallback));
   }
 
   if (error instanceof Error) {
     return error.message || fallback;
+  }
+
+  return fallback;
+}
+
+function getHttpFallbackMessage(error: HttpErrorResponse, fallback: string): string {
+  if (error.status === 0) {
+    return 'The API server could not be reached. Please make sure the backend is running.';
+  }
+
+  if (error.status === 401) {
+    return 'Your session expired. Please log in again.';
+  }
+
+  if (error.status === 403) {
+    return 'You do not have permission to perform this action.';
   }
 
   return fallback;

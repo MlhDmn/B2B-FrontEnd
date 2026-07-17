@@ -6,6 +6,7 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
 import { AuthService, UserPermission } from '../../services/auth.service';
+import { CartService } from '../../services/cart.service';
 import { Category, CategoryService } from '../../services/category.service';
 import {
   getProductGenderLabel,
@@ -66,6 +67,7 @@ export class Landing implements OnInit {
     private readonly productService: ProductService,
     private readonly categoryService: CategoryService,
     private readonly authService: AuthService,
+    private readonly cartService: CartService,
     private readonly router: Router,
     @Inject(PLATFORM_ID) private readonly platformId: object
   ) {}
@@ -77,6 +79,11 @@ export class Landing implements OnInit {
 
     this.loadProducts(1);
     this.loadModalCategories();
+    this.cartService.loadCart().subscribe({
+      error: () => {
+        this.cartMessage.set('');
+      }
+    });
   }
 
   loadProducts(pageNumber = this.currentPage()): void {
@@ -133,7 +140,23 @@ export class Landing implements OnInit {
   }
 
   addProductToCart(product: Product): void {
-    this.cartMessage.set(`${product.name} was added to your cart.`);
+    if (product.stockQuantity <= 0) {
+      this.cartMessage.set(`${product.name} is out of stock.`);
+      return;
+    }
+
+    this.cartService.addProduct(product).subscribe({
+      next: () => {
+        this.cartMessage.set(`${product.name} was added to your cart.`);
+      },
+      error: error => {
+        this.cartMessage.set(getApiErrorMessage(error, 'Product could not be added to the cart.'));
+      }
+    });
+  }
+
+  cartItemCount(): number {
+    return this.cartService.totalItems();
   }
 
   handleProductImageError(event: Event): void {

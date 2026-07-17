@@ -11,6 +11,8 @@ import { Unauthorized } from './pages/unauthorized/unauthorized';
 import { AdminPanel } from './pages/admin-panel/admin-panel';
 import { AdminFeature } from './pages/admin-feature/admin-feature';
 import { ShoppingCart } from './pages/shopping-cart/shopping-cart';
+import { CheckoutFailure } from './pages/checkout-failure/checkout-failure';
+import { CheckoutSuccess } from './pages/checkout-success/checkout-success';
 import { ManageCategories } from './pages/manage-categories/manage-categories';
 import { ManageUsers } from './pages/manage-users/manage-users';
 import { permissionGuard } from './core/permission.guard';
@@ -22,6 +24,8 @@ export const routes: Routes = [
   { path: 'unauthorized', component: Unauthorized },
   { path: 'home', component: Landing, canActivate: [authGuard] },
   { path: 'cart', component: ShoppingCart, canActivate: [authGuard] },
+  { path: 'checkout/failure', component: CheckoutFailure },
+  { path: 'checkout/success', component: CheckoutSuccess, canActivate: [authGuard] },
   {
     path: 'admin',
     component: AdminPanel,
