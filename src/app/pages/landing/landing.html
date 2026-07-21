@@ -104,8 +104,9 @@
               <input
                 id="filterMinPrice"
                 name="filterMinPrice"
-                type="number"
-                min="0"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9.]*"
                 [ngModel]="filterMinPrice()"
                 (ngModelChange)="updateFilterMinPrice($event)" />
             </div>
@@ -115,8 +116,9 @@
               <input
                 id="filterMaxPrice"
                 name="filterMaxPrice"
-                type="number"
-                min="0"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9.]*"
                 [ngModel]="filterMaxPrice()"
                 (ngModelChange)="updateFilterMaxPrice($event)" />
             </div>

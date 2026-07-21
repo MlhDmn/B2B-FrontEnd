@@ -43,8 +43,8 @@ export class Landing implements OnInit {
   searchTerm = signal('');
   filterCategoryId = signal('');
   filterGender = signal('');
-  filterMinPrice = signal<string | number | null>('');
-  filterMaxPrice = signal<string | number | null>('');
+  filterMinPrice = signal('');
+  filterMaxPrice = signal('');
   filterInStockOnly = signal(false);
   sortBy = signal<ProductSortOption>('nameAsc');
 
@@ -214,12 +214,12 @@ export class Landing implements OnInit {
     this.filterGender.set(value);
   }
 
-  updateFilterMinPrice(value: string | number | null): void {
-    this.filterMinPrice.set(value);
+  updateFilterMinPrice(value: string): void {
+    this.filterMinPrice.set(this.formatPriceFilterInput(value));
   }
 
-  updateFilterMaxPrice(value: string | number | null): void {
-    this.filterMaxPrice.set(value);
+  updateFilterMaxPrice(value: string): void {
+    this.filterMaxPrice.set(this.formatPriceFilterInput(value));
   }
 
   updateFilterInStockOnly(value: boolean): void {
@@ -363,12 +363,20 @@ export class Landing implements OnInit {
     return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : undefined;
   }
 
-  private parseNonNegativeNumber(value: string | number | null): number | undefined {
-    if (value === null || String(value).trim() === '') {
+  private formatPriceFilterInput(value: string): string {
+    const digits = value.replace(/\D/g, '');
+
+    return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  private parseNonNegativeNumber(value: string): number | undefined {
+    const normalizedValue = value.replace(/\./g, '').trim();
+
+    if (normalizedValue === '') {
       return undefined;
     }
 
-    const parsedValue = Number(value);
+    const parsedValue = Number(normalizedValue);
     return Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : undefined;
   }
 }
