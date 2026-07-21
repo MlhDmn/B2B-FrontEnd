@@ -17,6 +17,16 @@ import {
   ProductService
 } from '../../services/product.service';
 
+type DisplayCurrency = 'TRY' | 'USD' | 'EUR';
+
+interface CurrencyOption {
+  value: DisplayCurrency;
+  label: string;
+  currencyCode: string;
+  locale: string;
+  tryPerUnit: number;
+}
+
 @Component({
   selector: 'app-landing',
   imports: [FormsModule, RouterLink],
@@ -47,6 +57,7 @@ export class Landing implements OnInit {
   filterMaxPrice = signal('');
   filterInStockOnly = signal(false);
   sortBy = signal<ProductSortOption>('nameAsc');
+  selectedCurrency = signal<DisplayCurrency>('TRY');
 
   readonly genderOptions = [
     ProductGender.Unisex,
@@ -59,6 +70,11 @@ export class Landing implements OnInit {
     { value: 'nameDesc', label: 'Z to A' },
     { value: 'priceAsc', label: 'Price: low to high' },
     { value: 'priceDesc', label: 'Price: high to low' }
+  ];
+  readonly currencyOptions: CurrencyOption[] = [
+    { value: 'TRY', label: 'TL', currencyCode: 'TRY', locale: 'tr-TR', tryPerUnit: 1 },
+    { value: 'USD', label: 'USD', currencyCode: 'USD', locale: 'en-US', tryPerUnit: 47.0705 },
+    { value: 'EUR', label: 'EUR', currencyCode: 'EUR', locale: 'de-DE', tryPerUnit: 53.8435 }
   ];
 
   readonly getProductGenderLabel = getProductGenderLabel;
@@ -231,6 +247,10 @@ export class Landing implements OnInit {
     this.loadProducts(1);
   }
 
+  updateSelectedCurrency(value: DisplayCurrency): void {
+    this.selectedCurrency.set(value);
+  }
+
   applyFilters(): void {
     this.loadProducts(1);
   }
@@ -299,10 +319,12 @@ export class Landing implements OnInit {
   }
 
   formatPrice(price: number): string {
-    return new Intl.NumberFormat('tr-TR', {
+    const currency = this.currentCurrencyOption();
+
+    return new Intl.NumberFormat(currency.locale, {
       style: 'currency',
-      currency: 'TRY'
-    }).format(price);
+      currency: currency.currencyCode
+    }).format(price / currency.tryPerUnit);
   }
 
   private productFilters(): ProductListFilters {
@@ -367,6 +389,10 @@ export class Landing implements OnInit {
     const digits = value.replace(/\D/g, '');
 
     return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  private currentCurrencyOption(): CurrencyOption {
+    return this.currencyOptions.find(option => option.value === this.selectedCurrency()) ?? this.currencyOptions[0];
   }
 
   private parseNonNegativeNumber(value: string): number | undefined {

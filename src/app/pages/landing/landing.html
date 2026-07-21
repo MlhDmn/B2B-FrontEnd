@@ -71,6 +71,19 @@
           </div>
 
           <div class="filter-field">
+            <label for="displayCurrency">Currency</label>
+            <select
+              id="displayCurrency"
+              name="displayCurrency"
+              [ngModel]="selectedCurrency()"
+              (ngModelChange)="updateSelectedCurrency($event)">
+              @for (currency of currencyOptions; track currency.value) {
+                <option [value]="currency.value">{{ currency.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="filter-field">
             <label for="filterCategory">Category</label>
             <select
               id="filterCategory"
