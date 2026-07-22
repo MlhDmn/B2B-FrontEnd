@@ -10,6 +10,33 @@
       </div>
 
       <div class="header-actions">
+        @if (currentUser(); as user) {
+          <div class="account-menu">
+            <button
+              type="button"
+              class="account-button"
+              (click)="toggleAccountMenu()"
+              [attr.aria-expanded]="isAccountMenuOpen()"
+              aria-controls="accountPopup">
+              <span class="account-avatar">{{ userInitials() }}</span>
+              <span class="account-button-text">{{ user.fullName || user.email }}</span>
+            </button>
+
+            @if (isAccountMenuOpen()) {
+              <div id="accountPopup" class="account-popup" role="dialog" aria-label="Account details">
+                <div class="account-popup-header">
+                  <span class="account-avatar large">{{ userInitials() }}</span>
+                  <button type="button" class="icon-button" aria-label="Close account details" (click)="closeAccountMenu()">x</button>
+                </div>
+                <div class="account-details">
+                  <p class="account-name">{{ user.fullName || 'Account user' }}</p>
+                  <p class="account-email">{{ user.email || 'Email unavailable' }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
         <a routerLink="/cart" class="cart-nav-button" aria-label="Go to shopping cart">
           Shopping Cart
           @if (cartItemCount() > 0) {

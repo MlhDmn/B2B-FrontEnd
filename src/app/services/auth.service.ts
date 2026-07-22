@@ -17,7 +17,7 @@ export interface LoginRequest {
 }
 
 export interface AuthUser {
-  userId: number;
+  userId: number | string;
   email: string;
   firstName: string;
   lastName: string;
@@ -71,7 +71,20 @@ export class AuthService {
   }
 
   getCurrentUser() {
-    return this.http.get<Record<string, string>>(`${this.apiUrl}/me`);
+    return this.http.get<ApiResponse<AuthUser> | AuthUser | Record<string, unknown>>(`${this.apiUrl}/me`).pipe(
+      map(response => this.normalizeCurrentUser(response))
+    );
+  }
+
+  getCurrentUserFromToken(): AuthUser | null {
+    const token = this.getToken();
+
+    if (!token) {
+      return null;
+    }
+
+    const payload = this.decodeTokenPayload(token);
+    return payload ? this.normalizeUserPayload(payload) : null;
   }
 
   getToken(): string | null {
@@ -157,5 +170,85 @@ export class AuthService {
     }
 
     return payload.exp * 1000 <= Date.now();
+  }
+
+  private normalizeCurrentUser(response: ApiResponse<AuthUser> | AuthUser | Record<string, unknown>): AuthUser {
+    const responseData = this.isApiResponse(response) ? response.data : response;
+
+    if (!responseData) {
+      throw new Error('Current user could not be loaded.');
+    }
+
+    const user = this.normalizeUserPayload(responseData as Record<string, unknown>);
+
+    if (!user) {
+      throw new Error('Current user could not be loaded.');
+    }
+
+    return user;
+  }
+
+  private normalizeUserPayload(payload: Record<string, unknown>): AuthUser | null {
+    const userId = this.readPayloadValue(payload, [
+      'userId',
+      'sub',
+      'nameid',
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'
+    ]);
+    const email = this.readPayloadValue(payload, [
+      'email',
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
+    ]);
+    const firstName = this.readPayloadValue(payload, [
+      'firstName',
+      'given_name',
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'
+    ]);
+    const lastName = this.readPayloadValue(payload, [
+      'lastName',
+      'family_name',
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'
+    ]);
+    const fullName = this.readPayloadValue(payload, [
+      'fullName',
+      'name',
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
+    ]);
+    const normalizedFullName = fullName || [firstName, lastName].filter(Boolean).join(' ');
+
+    if (!email && !normalizedFullName) {
+      return null;
+    }
+
+    return {
+      userId,
+      email,
+      firstName,
+      lastName,
+      fullName: normalizedFullName || email
+    };
+  }
+
+  private readPayloadValue(payload: Record<string, unknown>, keys: string[]): string {
+    for (const key of keys) {
+      const value = payload[key];
+
+      if (typeof value === 'string' && value.trim()) {
+        return value.trim();
+      }
+
+      if (typeof value === 'number') {
+        return String(value);
+      }
+    }
+
+    return '';
+  }
+
+  private isApiResponse(value: unknown): value is ApiResponse<AuthUser> {
+    return typeof value === 'object'
+      && value !== null
+      && 'data' in value
+      && 'hasError' in value;
   }
 }

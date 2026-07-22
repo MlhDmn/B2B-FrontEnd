@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { getApiErrorMessage } from '../../services/api-response';
-import { AuthService, UserPermission } from '../../services/auth.service';
+import { AuthService, AuthUser, UserPermission } from '../../services/auth.service';
 import { CartService } from '../../services/cart.service';
 import { Category, CategoryService } from '../../services/category.service';
 import {
@@ -46,7 +46,9 @@ export class Landing implements OnInit {
   errorMessage = signal('');
   isLoading = signal(true);
   isSidebarOpen = signal(false);
+  isAccountMenuOpen = signal(false);
   selectedProduct = signal<Product | null>(null);
+  currentUser = signal<AuthUser | null>(null);
   cartMessage = signal('');
   isLoadingCategories = signal(false);
   modalCategoryOptions = signal<Category[]>([]);
@@ -94,6 +96,7 @@ export class Landing implements OnInit {
     }
 
     this.loadProducts(1);
+    this.loadCurrentUser();
     this.loadModalCategories();
     this.cartService.loadCart().subscribe({
       error: () => {
@@ -134,6 +137,7 @@ export class Landing implements OnInit {
   logout(): void {
     this.authService.logout();
     this.closeSidebar();
+    this.closeAccountMenu();
     this.router.navigate(['/login']);
   }
 
@@ -143,6 +147,14 @@ export class Landing implements OnInit {
 
   closeSidebar(): void {
     this.isSidebarOpen.set(false);
+  }
+
+  toggleAccountMenu(): void {
+    this.isAccountMenuOpen.update(isOpen => !isOpen);
+  }
+
+  closeAccountMenu(): void {
+    this.isAccountMenuOpen.set(false);
   }
 
   openProductDetails(product: Product): void {
@@ -272,6 +284,20 @@ export class Landing implements OnInit {
     return this.authService.hasPermission(UserPermission.EditProducts);
   }
 
+  userInitials(): string {
+    const user = this.currentUser();
+    const source = user?.fullName || user?.email || '';
+    const initials = source
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
+
+    return initials || 'U';
+  }
+
   totalPages(): number {
     return this.totalPageCount();
   }
@@ -376,6 +402,23 @@ export class Landing implements OnInit {
       error: error => {
         this.modalCategoryOptions.set([]);
         this.errorMessage.set(getApiErrorMessage(error, 'Categories could not be loaded.'));
+      }
+    });
+  }
+
+  private loadCurrentUser(): void {
+    const tokenUser = this.authService.getCurrentUserFromToken();
+
+    if (tokenUser) {
+      this.currentUser.set(tokenUser);
+    }
+
+    this.authService.getCurrentUser().subscribe({
+      next: user => this.currentUser.set(user),
+      error: () => {
+        if (!this.currentUser()) {
+          this.currentUser.set(null);
+        }
       }
     });
   }
